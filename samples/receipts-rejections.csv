@@ -1,0 +1,5 @@
+request_key,warehouse_code,product_code,quantity,unit_cost,receipt_date,reference,note
+csv-receipt-ok,EAST,P002,10,65.00,2026-09-01,CSV-PO-003,正常行は独立して確定
+csv-receipt-bad-warehouse,UNKNOWN,P002,10,65.00,2026-09-01,CSV-PO-004,存在しない倉庫
+csv-receipt-bad-quantity,EAST,P002,-1,65.00,2026-09-01,CSV-PO-005,負の入庫数を拒否
+csv-receipt-bad-date,EAST,P002,10,65.00,2026-02-30,CSV-PO-006,存在しない日付を拒否

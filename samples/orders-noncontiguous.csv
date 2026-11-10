@@ -1,0 +1,4 @@
+external_key,customer_code,warehouse_code,order_date,requested_date,external_reference,delivery_address,product_code,quantity,notes
+CSV-ORDER-FRAGMENT,C001,EAST,2026-09-01,2026-09-08,CSV-PO-FRAGMENT,,P001,2,離れた位置で同じキーが再登場するため両グループを拒否
+CSV-ORDER-CONTROL,C001,EAST,2026-09-01,2026-09-08,CSV-PO-CONTROL,,P002,2,独立した正常注文
+CSV-ORDER-FRAGMENT,C001,EAST,2026-09-01,2026-09-08,CSV-PO-FRAGMENT,,P003,2,離れた位置で同じキーが再登場するため両グループを拒否

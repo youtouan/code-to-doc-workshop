@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="StockTransfer" table="stock_transfer">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="sourceWarehouse" column="source_warehouse_id" not-null="true"/>
+    <many-to-one name="destinationWarehouse" column="destination_warehouse_id" not-null="true"/>
+    <property name="status" not-null="true" length="30"/>
+    <property name="note" not-null="true" length="500"/>
+    <property name="createdById" column="created_by_id" not-null="true"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="updatedAt" column="updated_at" type="timestamp" not-null="true"/>
+    <property name="approvedBy" column="approved_by" length="50"/>
+    <property name="approvedAt" column="approved_at" type="timestamp"/>
+    <property name="dispatchedBy" column="dispatched_by" length="50"/>
+    <property name="dispatchedAt" column="dispatched_at" type="timestamp"/>
+    <property name="completedAt" column="completed_at" type="timestamp"/>
+    <property name="cancellationReason" column="cancellation_reason" not-null="true" length="500"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" order-by="product_id" lazy="false">
+      <key column="transfer_id"/><one-to-many class="StockTransferLine"/>
+    </bag>
+  </class>
+  <class name="StockTransferLine" table="stock_transfer_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="transfer" column="transfer_id" not-null="true"/>
+    <many-to-one name="product" column="product_id" not-null="true"/>
+    <property name="quantity" not-null="true"/>
+    <property name="dispatchedQuantity" column="dispatched_quantity" not-null="true"/>
+    <property name="receivedQuantity" column="received_quantity" not-null="true"/>
+    <property name="lostQuantity" column="lost_quantity" not-null="true"/>
+    <property name="unitCost" column="unit_cost" precision="18" scale="2" not-null="true"/>
+  </class>
+  <class name="StockTransferReceipt" table="stock_transfer_receipt" mutable="false">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="transfer" column="transfer_id" not-null="true"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <property name="kind" not-null="true" length="20"/>
+    <property name="requestKey" column="request_key" not-null="true" unique="true" length="120"/>
+    <property name="fingerprint" not-null="true" length="64"/>
+    <property name="note" not-null="true" length="500"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <bag name="lines" inverse="true" cascade="save-update" order-by="id" lazy="false">
+      <key column="receipt_id"/><one-to-many class="StockTransferReceiptLine"/>
+    </bag>
+  </class>
+  <class name="StockTransferReceiptLine" table="stock_transfer_receipt_line" mutable="false">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="receipt" column="receipt_id" not-null="true"/>
+    <many-to-one name="transferLine" column="transfer_line_id" not-null="true"/>
+    <property name="quantity" not-null="true"/>
+    <property name="unitCost" column="unit_cost" precision="18" scale="2" not-null="true"/>
+  </class>
+  <class name="StockAdjustment" table="stock_adjustment">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="warehouse" column="warehouse_id" not-null="true"/>
+    <many-to-one name="product" column="product_id" not-null="true"/>
+    <property name="quantityChange" column="quantity_change" not-null="true"/>
+    <property name="reason" not-null="true" length="500"/>
+    <property name="status" not-null="true" length="30"/>
+    <property name="unitCost" column="unit_cost" precision="18" scale="2" not-null="true"/>
+    <property name="proposedById" column="proposed_by_id" not-null="true"/>
+    <property name="proposedBy" column="proposed_by" not-null="true" length="50"/>
+    <property name="proposedAt" column="proposed_at" type="timestamp" not-null="true"/>
+    <property name="decidedBy" column="decided_by" length="50"/>
+    <property name="decidedAt" column="decided_at" type="timestamp"/>
+    <property name="decisionReason" column="decision_reason" not-null="true" length="500"/>
+  </class>
+  <class name="StockCount" table="stock_count">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="warehouse" column="warehouse_id" not-null="true"/>
+    <property name="status" not-null="true" length="30"/>
+    <property name="note" not-null="true" length="500"/>
+    <property name="createdById" column="created_by_id" not-null="true"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="updatedAt" column="updated_at" type="timestamp" not-null="true"/>
+    <property name="reviewedBy" column="reviewed_by" length="50"/>
+    <property name="reviewedAt" column="reviewed_at" type="timestamp"/>
+    <property name="approvedBy" column="approved_by" length="50"/>
+    <property name="approvedAt" column="approved_at" type="timestamp"/>
+    <property name="cancellationReason" column="cancellation_reason" not-null="true" length="500"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" order-by="balance_id" lazy="false">
+      <key column="stock_count_id"/><one-to-many class="StockCountLine"/>
+    </bag>
+  </class>
+  <class name="StockCountLine" table="stock_count_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="stockCount" column="stock_count_id" not-null="true"/>
+    <many-to-one name="balance" column="balance_id" not-null="true"/>
+    <property name="snapshotOnHand" column="snapshot_on_hand" not-null="true"/>
+    <property name="snapshotReserved" column="snapshot_reserved" not-null="true"/>
+    <property name="snapshotVersion" column="snapshot_version" not-null="true"/>
+    <property name="snapshotMovementAt" column="snapshot_movement_at" type="timestamp"/>
+    <property name="unitCost" column="unit_cost" precision="18" scale="2" not-null="true"/>
+    <property name="countedQuantity" column="counted_quantity"/>
+    <property name="note" not-null="true" length="500"/>
+    <property name="countedBy" column="counted_by" length="50"/>
+    <property name="countedAt" column="counted_at" type="timestamp"/>
+    <property name="holding" not-null="true"/>
+  </class>
+</hibernate-mapping>

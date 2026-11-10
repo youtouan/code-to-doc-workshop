@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="AuditEvent" table="audit_event" mutable="false">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="occurredAt" column="occurred_at" not-null="true" type="timestamp"/>
+    <property name="actor" not-null="true" length="50"/>
+    <property name="operation" not-null="true" length="60"/>
+    <property name="entityType" column="entity_type" not-null="true" length="100"/>
+    <property name="entityId" column="entity_id" not-null="true"/>
+    <property name="detail" not-null="true" length="1000"/>
+  </class>
+</hibernate-mapping>

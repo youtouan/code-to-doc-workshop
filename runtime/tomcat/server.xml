@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Server port="-1">
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener"/>
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+  <Service name="Wholesale">
+    <Connector port="${http.port}" address="${http.address}" protocol="HTTP/1.1"
+               connectionTimeout="20000" maxThreads="60" URIEncoding="UTF-8"
+               maxPostSize="2097152" maxParameterCount="2500" server="Wholesale Demo"/>
+    <Engine name="Wholesale" defaultHost="localhost">
+      <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="false">
+        <Valve className="org.apache.catalina.valves.AccessLogValve"
+               directory="logs" prefix="access" suffix=".log"
+               pattern="%h %t &quot;%m %U&quot; %s %b %D" encoding="UTF-8"/>
+      </Host>
+    </Engine>
+  </Service>
+</Server>

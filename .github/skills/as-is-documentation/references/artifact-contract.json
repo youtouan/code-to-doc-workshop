@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "marker": "code-to-doc-artifact",
+  "statusValues": ["draft", "reviewed"],
+  "defaultObservationLog": "docs/as-is/observations.md",
+  "forbiddenEvidencePrefixes": [".github/", ".runtime/", "docs/as-is/"],
+  "limits": {
+    "docBytes": 262144,
+    "sourceBytes": 2097152,
+    "rangeLines": 200,
+    "citations": 300
+  },
+  "freeSections": ["Scope", "Evidence", "Unknowns"],
+  "kinds": {
+    "module-map": {
+      "sections": ["Scope", "Modules and responsibilities", "Dependencies", "Data flow", "Entry points", "Evidence", "Unknowns"],
+      "mermaid": ["Dependencies", "Data flow"]
+    },
+    "feature-spec": {
+      "sections": ["Scope", "Actors and preconditions", "Inputs", "Rules and state", "Outputs and side effects", "Failure cases", "Evidence", "Unknowns"],
+      "mermaid": []
+    },
+    "process-design": {
+      "sections": ["Scope", "Entry points and configuration", "Call sequence", "Data changes", "Transactions and failures", "Evidence", "Unknowns"],
+      "mermaid": ["Call sequence"]
+    },
+    "batch-runbook": {
+      "sections": ["Scope", "Execution prerequisites", "Input contract", "Processing units and partial results", "Rerun decision table", "Exit status and outputs", "Evidence", "Unknowns"],
+      "mermaid": []
+    }
+  }
+}

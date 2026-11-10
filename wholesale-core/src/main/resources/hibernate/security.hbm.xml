@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="AppUser" table="app_user">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="login" not-null="true" unique="true" length="50"/>
+    <property name="displayName" column="display_name" not-null="true" length="100"/>
+    <property name="passwordHash" column="password_hash" not-null="true" length="300"/>
+    <property name="roles" not-null="true" length="200"/>
+    <property name="active" not-null="true"/>
+    <property name="failedAttempts" column="failed_attempts" not-null="true"/>
+    <property name="lockedUntil" column="locked_until" type="timestamp"/>
+    <property name="lastLoginAt" column="last_login_at" type="timestamp"/>
+    <property name="passwordChangedAt" column="password_changed_at" type="timestamp"/>
+  </class>
+</hibernate-mapping>

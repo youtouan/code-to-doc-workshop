@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.batch.entity" default-lazy="false">
+  <class name="BatchRun" table="batch_run">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="runKey" column="run_key" length="120" unique="true" not-null="true"/>
+    <property name="command" length="40" not-null="true"/>
+    <property name="invocation" length="4000" not-null="true"/>
+    <property name="payloadHash" column="payload_hash" length="64" not-null="true"/>
+    <property name="inputSha256" column="input_sha256" length="64"/>
+    <property name="actorId" column="actor_id" not-null="true"/>
+    <property name="actorLogin" column="actor_login" length="50" not-null="true"/>
+    <property name="status" length="20" not-null="true"/>
+    <property name="totalRows" column="total_rows" not-null="true"/>
+    <property name="successRows" column="success_rows" not-null="true"/>
+    <property name="rejectedRows" column="rejected_rows" not-null="true"/>
+    <property name="hasMore" column="has_more" not-null="true"/>
+    <property name="exitCode" column="exit_code" not-null="true"/>
+    <property name="message" length="2000" not-null="true"/>
+    <property name="startedAt" column="started_at" type="timestamp" not-null="true"/>
+    <property name="endedAt" column="ended_at" type="timestamp"/>
+  </class>
+  <class name="BatchRow" table="batch_row">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="runId" column="run_id" not-null="true"/>
+    <property name="rowNumber" column="row_number" not-null="true"/>
+    <property name="sourceLine" column="source_line" not-null="true"/>
+    <property name="payloadHash" column="payload_hash" length="64" not-null="true"/>
+    <property name="result" length="20" not-null="true"/>
+    <property name="code" length="120" not-null="true"/>
+    <property name="message" length="2000" not-null="true"/>
+    <property name="entityType" column="entity_type" length="50"/>
+    <property name="entityId" column="entity_id"/>
+    <property name="entityReference" column="entity_reference" length="120"/>
+    <property name="finishedAt" column="finished_at" type="timestamp" not-null="true"/>
+  </class>
+</hibernate-mapping>

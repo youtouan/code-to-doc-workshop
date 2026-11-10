@@ -1,0 +1,32 @@
+{
+  "name": "Code to Doc lab: legacy wholesale app",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "8",
+      "jdkDistro": "tem",
+      "installMaven": true
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/sshd:1": {}
+  },
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb"
+  },
+  "forwardPorts": [
+    8080
+  ],
+  "portsAttributes": {
+    "8080": {
+      "label": "wholesale web (/wholesale/login.do)",
+      "onAutoForward": "silent"
+    }
+  },
+  "onCreateCommand": "docker compose build web && docker compose --profile batch build batch",
+  "postStartCommand": "mkdir -p .runtime/exports && docker compose up --detach web && sh scripts/lab/wait-for-app.sh"
+}

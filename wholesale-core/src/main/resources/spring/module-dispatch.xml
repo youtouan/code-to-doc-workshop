@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <bean id="dispatchLocks" class="jp.co.tsubame.wholesale.dao.DispatchLocks">
+    <property name="dao" ref="wholesaleDao"/>
+  </bean>
+  <bean id="deliveryAttemptDao" class="jp.co.tsubame.wholesale.dao.DeliveryAttemptDao">
+    <property name="dao" ref="wholesaleDao"/>
+  </bean>
+  <bean id="dispatchManifestService" class="jp.co.tsubame.wholesale.service.DispatchManifestService" parent="baseService">
+    <property name="locks" ref="dispatchLocks"/>
+    <property name="shippingService" ref="shippingService"/>
+  </bean>
+  <bean id="deliveryAttemptService" class="jp.co.tsubame.wholesale.service.DeliveryAttemptService" parent="baseService">
+    <property name="locks" ref="dispatchLocks"/>
+    <property name="attempts" ref="deliveryAttemptDao"/>
+  </bean>
+</beans>

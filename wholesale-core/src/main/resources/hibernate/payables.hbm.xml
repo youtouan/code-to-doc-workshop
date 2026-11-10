@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="APInvoice" table="ap_invoice">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="supplier" column="supplier_id" not-null="true"/>
+    <property name="supplierName" column="supplier_name" not-null="true" length="160"/>
+    <property name="supplierAddress" column="supplier_address" not-null="true" length="300"/>
+    <property name="supplierInvoiceNumber" column="supplier_invoice_number" not-null="true" length="80"/>
+    <property name="status" not-null="true" length="20"/>
+    <property name="invoiceDate" column="invoice_date" type="date" not-null="true"/>
+    <property name="dueDate" column="due_date" type="date" not-null="true"/>
+    <property name="postedDate" column="posted_date" type="date"/>
+    <property name="taxRounding" column="tax_rounding" not-null="true" length="10"/>
+    <property name="netAmount" column="net_amount" precision="18" scale="2" not-null="true"/>
+    <property name="taxAmount" column="tax_amount" precision="18" scale="2" not-null="true"/>
+    <property name="totalAmount" column="total_amount" precision="18" scale="2" not-null="true"/>
+    <property name="paidAmount" column="paid_amount" precision="18" scale="2" not-null="true"/>
+    <property name="creditedAmount" column="credited_amount" precision="18" scale="2" not-null="true"/>
+    <property name="varianceAmount" column="variance_amount" precision="18" scale="2" not-null="true"/>
+    <property name="absoluteVarianceAmount" column="absolute_variance_amount" precision="18" scale="2" not-null="true"/>
+    <property name="varianceStatus" column="variance_status" not-null="true" length="20"/>
+    <property name="varianceReason" column="variance_reason" not-null="true" length="500"/>
+    <property name="varianceApprovedBy" column="variance_approved_by" length="50"/>
+    <property name="varianceApprovedById" column="variance_approved_by_id" type="long"/>
+    <property name="varianceApprovedAt" column="variance_approved_at" type="timestamp"/>
+    <property name="reviewFingerprint" column="review_fingerprint" length="64"/>
+    <property name="changeNumber" column="change_number" not-null="true"/>
+    <property name="notes" not-null="true" length="1000"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdById" column="created_by_id" type="long" not-null="true"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="lastChangedBy" column="last_changed_by" not-null="true" length="50"/>
+    <property name="lastChangedById" column="last_changed_by_id" type="long" not-null="true"/>
+    <property name="lastChangedAt" column="last_changed_at" type="timestamp" not-null="true"/>
+    <property name="postedBy" column="posted_by" length="50"/>
+    <property name="postedAt" column="posted_at" type="timestamp"/>
+    <property name="cancelledBy" column="cancelled_by" length="50"/>
+    <property name="cancelledAt" column="cancelled_at" type="timestamp"/>
+    <property name="cancellationReason" column="cancellation_reason" length="500"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="line_number">
+      <key column="invoice_id"/><one-to-many class="APInvoiceLine"/>
+    </bag>
+  </class>
+  <class name="APInvoiceLine" table="ap_invoice_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="invoice" column="invoice_id" not-null="true"/>
+    <property name="lineNumber" column="line_number" not-null="true"/>
+    <many-to-one name="product" column="product_id" not-null="true"/>
+    <property name="productCode" column="product_code" not-null="true" length="30"/>
+    <property name="description" not-null="true" length="160"/>
+    <property name="unit" not-null="true" length="20"/>
+    <property name="quantity" not-null="true"/>
+    <property name="unitPrice" column="unit_price" precision="18" scale="2" not-null="true"/>
+    <property name="taxRate" column="tax_rate" precision="6" scale="4" not-null="true"/>
+    <property name="netAmount" column="net_amount" precision="18" scale="2" not-null="true"/>
+    <bag name="matches" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="id">
+      <key column="invoice_line_id"/><one-to-many class="APMatch"/>
+    </bag>
+  </class>
+  <class name="APMatch" table="ap_match">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="invoiceLine" column="invoice_line_id" not-null="true"/>
+    <many-to-one name="receiptLine" column="receipt_line_id" not-null="true"/>
+    <property name="quantity" not-null="true"/>
+    <property name="receiptNumber" column="receipt_number" not-null="true" length="50"/>
+    <property name="purchaseOrderNumber" column="purchase_order_number" not-null="true" length="50"/>
+    <property name="receiptDate" column="receipt_date" type="date" not-null="true"/>
+    <property name="receiptUnitCost" column="receipt_unit_cost" precision="18" scale="2" not-null="true"/>
+    <property name="orderedUnitCost" column="ordered_unit_cost" precision="18" scale="2" not-null="true"/>
+  </class>
+  <class name="APCredit" table="ap_credit">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="supplier" column="supplier_id" not-null="true"/>
+    <many-to-one name="invoice" column="invoice_id" not-null="true"/>
+    <property name="supplierCreditNumber" column="supplier_credit_number" not-null="true" length="80"/>
+    <property name="status" not-null="true" length="20"/>
+    <property name="creditDate" column="credit_date" type="date" not-null="true"/>
+    <property name="postedDate" column="posted_date" type="date"/>
+    <property name="reason" not-null="true" length="500"/>
+    <property name="netAmount" column="net_amount" precision="18" scale="2" not-null="true"/>
+    <property name="taxAmount" column="tax_amount" precision="18" scale="2" not-null="true"/>
+    <property name="totalAmount" column="total_amount" precision="18" scale="2" not-null="true"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="approvedBy" column="approved_by" length="50"/>
+    <property name="createdById" column="created_by_id" type="long" not-null="true"/>
+    <property name="approvedById" column="approved_by_id" type="long"/>
+    <property name="approvedAt" column="approved_at" type="timestamp"/>
+    <property name="cancelledBy" column="cancelled_by" length="50"/>
+    <property name="cancelledAt" column="cancelled_at" type="timestamp"/>
+    <property name="cancellationReason" column="cancellation_reason" length="500"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="line_number">
+      <key column="credit_id"/><one-to-many class="APCreditLine"/>
+    </bag>
+  </class>
+  <class name="APCreditLine" table="ap_credit_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="credit" column="credit_id" not-null="true"/>
+    <many-to-one name="invoiceLine" column="invoice_line_id" not-null="true"/>
+    <property name="lineNumber" column="line_number" not-null="true"/>
+    <property name="description" not-null="true" length="160"/>
+    <property name="netAmount" column="net_amount" precision="18" scale="2" not-null="true"/>
+    <property name="taxRate" column="tax_rate" precision="6" scale="4" not-null="true"/>
+  </class>
+  <class name="APPaymentVoucher" table="ap_payment_voucher">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="supplier" column="supplier_id" not-null="true"/>
+    <property name="supplierName" column="supplier_name" not-null="true" length="160"/>
+    <property name="requestKey" column="request_key" not-null="true" unique="true" length="100"/>
+    <property name="fingerprint" not-null="true" length="64"/>
+    <property name="paymentDate" column="payment_date" type="date" not-null="true"/>
+    <property name="amount" precision="18" scale="2" not-null="true"/>
+    <property name="method" not-null="true" length="30"/>
+    <property name="reference" not-null="true" length="100"/>
+    <property name="notes" not-null="true" length="1000"/>
+    <property name="status" not-null="true" length="20"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="cancelledBy" column="cancelled_by" length="50"/>
+    <property name="cancelledAt" column="cancelled_at" type="timestamp"/>
+    <property name="cancellationDate" column="cancellation_date" type="date"/>
+    <property name="cancellationReason" column="cancellation_reason" length="500"/>
+    <bag name="lines" inverse="true" cascade="all" lazy="true" order-by="invoice_id">
+      <key column="voucher_id"/><one-to-many class="APPaymentLine"/>
+    </bag>
+  </class>
+  <class name="APPaymentLine" table="ap_payment_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="voucher" column="voucher_id" not-null="true"/>
+    <many-to-one name="invoice" column="invoice_id" not-null="true"/>
+    <property name="amount" precision="18" scale="2" not-null="true"/>
+    <property name="status" not-null="true" length="20"/>
+    <property name="reversalDate" column="reversal_date" type="date"/>
+  </class>
+</hibernate-mapping>

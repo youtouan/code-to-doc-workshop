@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="DispatchManifest" table="dispatch_manifest">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="warehouse" column="warehouse_id" not-null="true"/>
+    <property name="carrier" not-null="true" length="30"/>
+    <property name="plannedDispatchDate" column="planned_dispatch_date" type="date" not-null="true"/>
+    <property name="status" not-null="true" length="30"/>
+    <property name="note" not-null="true" length="500"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="updatedAt" column="updated_at" type="timestamp" not-null="true"/>
+    <property name="releasedBy" column="released_by" length="50"/>
+    <property name="releasedAt" column="released_at" type="timestamp"/>
+    <property name="dispatchedBy" column="dispatched_by" length="50"/>
+    <property name="dispatchedAt" column="dispatched_at" type="timestamp"/>
+    <property name="dispatchDate" column="dispatch_date" type="date"/>
+    <property name="cancellationReason" column="cancellation_reason" not-null="true" length="500"/>
+    <bag name="stops" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="stop_sequence">
+      <key column="manifest_id"/><one-to-many class="DispatchStop"/>
+    </bag>
+  </class>
+  <class name="DispatchStop" table="dispatch_stop">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="manifest" column="manifest_id" not-null="true"/>
+    <many-to-one name="shipment" column="shipment_id" not-null="true"/>
+    <property name="stopSequence" column="stop_sequence" not-null="true"/>
+    <property name="sourceShipmentVersion" column="source_shipment_version" not-null="true"/>
+    <property name="sourceOrderVersion" column="source_order_version" not-null="true"/>
+    <property name="sourceFingerprint" column="source_fingerprint" not-null="true" length="64"/>
+    <property name="customerName" column="customer_name" not-null="true" length="160"/>
+    <property name="deliveryAddress" column="delivery_address" not-null="true" length="300"/>
+    <property name="note" not-null="true" length="250"/>
+    <property name="active" not-null="true"/>
+  </class>
+  <class name="DeliveryAttempt" table="delivery_attempt" mutable="false">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="shipment" column="shipment_id" not-null="true"/>
+    <property name="sequenceNumber" column="sequence_number" not-null="true"/>
+    <property name="eventType" column="event_type" not-null="true" length="20"/>
+    <property name="supersedesId" column="supersedes_id" unique="true"/>
+    <property name="requestKey" column="request_key" not-null="true" unique="true" length="120"/>
+    <property name="fingerprint" not-null="true" length="64"/>
+    <property name="attemptAt" column="attempt_at" type="timestamp" not-null="true"/>
+    <property name="businessDate" column="business_date" type="date" not-null="true"/>
+    <property name="outcome" not-null="true" length="20"/>
+    <property name="reportingCompany" column="reporting_company" not-null="true" length="120"/>
+    <property name="evidenceReference" column="evidence_reference" not-null="true" length="120"/>
+    <property name="reason" not-null="true" length="500"/>
+    <property name="nextAttemptDate" column="next_attempt_date" type="date"/>
+    <property name="correctionReason" column="correction_reason" not-null="true" length="500"/>
+    <property name="recordedBy" column="recorded_by" not-null="true" length="50"/>
+    <property name="recordedAt" column="recorded_at" type="timestamp" not-null="true"/>
+  </class>
+</hibernate-mapping>

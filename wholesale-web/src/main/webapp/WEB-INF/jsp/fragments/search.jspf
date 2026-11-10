@@ -1,0 +1,12 @@
+<%@ page pageEncoding="UTF-8" %>
+<form method="get" action="<c:out value='${ctx}${route}'/>" class="toolbar" role="search">
+  <input type="hidden" name="op" value="<c:out value='${empty searchOperation ? "list" : searchOperation}'/>">
+  <label>キーワード<input type="search" name="text" maxlength="100" value="<c:out value='${form.text}'/>"></label>
+  <label>状態<select name="status"><option value="">すべて</option><c:forEach items="${statuses}" var="s"><option value="<c:out value='${s}'/>" <c:if test="${form.status eq s}">selected</c:if>><c:out value="${s}"/></option></c:forEach></select></label>
+  <c:if test="${searchCustomer}"><label>得意先<select name="customerId"><option value="">すべて</option><c:forEach items="${customers}" var="c"><option value="<c:out value='${c.id}'/>" <c:if test="${form.customerId eq fn:escapeXml(c.id)}">selected</c:if>><c:out value="${c.code}"/> <c:out value="${c.name}"/></option></c:forEach></select></label></c:if>
+  <c:if test="${searchWarehouse}"><label>倉庫<select name="warehouseId"><option value="">すべて</option><c:forEach items="${warehouses}" var="w"><option value="<c:out value='${w.id}'/>" <c:if test="${form.warehouseId eq fn:escapeXml(w.id)}">selected</c:if>><c:out value="${w.name}"/></option></c:forEach></select></label></c:if>
+  <c:if test="${searchDates}"><label>開始日<input type="date" name="from" value="<c:out value='${form.from}'/>"></label><label>終了日<input type="date" name="to" value="<c:out value='${form.to}'/>"></label></c:if>
+  <label>表示件数<select name="size"><c:forTokens items="10,25,50,100" delims="," var="n"><option value="<c:out value='${n}'/>" <c:if test="${form.size eq n}">selected</c:if>><c:out value="${n}"/>件</option></c:forTokens></select></label>
+  <button class="primary" type="submit">検索</button>
+  <a class="button" href="<c:out value='${ctx}${route}'/>">条件クリア</a>
+</form>

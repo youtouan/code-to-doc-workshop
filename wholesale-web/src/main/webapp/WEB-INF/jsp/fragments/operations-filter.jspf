@@ -1,0 +1,27 @@
+<%@ page pageEncoding="UTF-8" %>
+<section class="card">
+  <div class="actions">
+    <c:if test="${canSALES or canMANAGER or canBILLING}"><a class="button" href="<c:out value='${ctx}'/>/operationsReports.do?op=sales">売上集計</a></c:if>
+    <c:if test="${canSALES or canWAREHOUSE or canMANAGER or canBATCH}"><a class="button" href="<c:out value='${ctx}'/>/operationsReports.do?op=backlog">現在の受注残</a></c:if>
+    <c:if test="${canWAREHOUSE or canMANAGER or canBILLING}"><a class="button" href="<c:out value='${ctx}'/>/operationsReports.do?op=supplierQuality">仕入品質・遅延</a></c:if>
+    <c:if test="${canWAREHOUSE or canMANAGER or canBILLING or canBATCH}"><a class="button" href="<c:out value='${ctx}'/>/operationsReports.do?op=stockActivity">在庫活動</a></c:if>
+  </div>
+  <form method="get" action="<c:out value='${ctx}'/>/operationsReports.do" role="search">
+    <input type="hidden" name="op" value="<c:out value='${reportMode}'/>">
+    <div class="field-grid">
+      <label>開始日<input type="date" name="from" value="<c:out value='${form.from}'/>" max="<c:out value='${latestReportDate}'/>" required></label>
+      <label>終了日<input type="date" name="to" value="<c:out value='${form.to}'/>" max="<c:out value='${latestReportDate}'/>" required></label>
+      <c:if test="${reportMode eq 'sales'}"><label>集計軸<select name="dimension"><option value="CUSTOMER" <c:if test="${form.dimension eq 'CUSTOMER'}">selected</c:if>>得意先別</option><option value="PRODUCT" <c:if test="${form.dimension eq 'PRODUCT'}">selected</c:if>>商品別</option><option value="WAREHOUSE" <c:if test="${form.dimension eq 'WAREHOUSE'}">selected</c:if>>倉庫別</option></select></label></c:if>
+      <label>キーワード<input type="search" name="text" maxlength="100" value="<c:out value='${form.text}'/>"></label>
+      <c:if test="${reportMode eq 'sales' or reportMode eq 'backlog'}"><label>得意先<select name="customerId"><option value="">すべて</option><c:forEach items="${customers}" var="customer"><option value="<c:out value='${customer.id}'/>" <c:if test="${form.customerId eq fn:escapeXml(customer.id)}">selected</c:if>><c:out value="${customer.code}"/> <c:out value="${customer.name}"/></option></c:forEach></select></label></c:if>
+      <c:if test="${reportMode eq 'supplierQuality'}"><label>仕入先<select name="supplierId"><option value="">すべて</option><c:forEach items="${suppliers}" var="supplier"><option value="<c:out value='${supplier.id}'/>" <c:if test="${form.supplierId eq fn:escapeXml(supplier.id)}">selected</c:if>><c:out value="${supplier.code}"/> <c:out value="${supplier.name}"/></option></c:forEach></select></label></c:if>
+      <label>倉庫<select name="warehouseId"><option value="">すべて</option><c:forEach items="${warehouses}" var="warehouse"><option value="<c:out value='${warehouse.id}'/>" <c:if test="${form.warehouseId eq fn:escapeXml(warehouse.id)}">selected</c:if>><c:out value="${warehouse.code}"/> <c:out value="${warehouse.name}"/></option></c:forEach></select></label>
+      <label>商品<select name="productId"><option value="">すべて</option><c:forEach items="${products}" var="product"><option value="<c:out value='${product.id}'/>" <c:if test="${form.productId eq fn:escapeXml(product.id)}">selected</c:if>><c:out value="${product.code}"/> <c:out value="${product.name}"/></option></c:forEach></select></label>
+      <c:choose><c:when test="${reportMode eq 'stockActivity'}"><label>移動区分（完全一致）<input type="text" name="status" maxlength="40" value="<c:out value='${form.status}'/>"></label></c:when><c:otherwise><label>例外抽出<select name="exceptionsOnly"><option value="false">すべて</option><option value="true" <c:if test="${form.exceptionsOnly eq 'true'}">selected</c:if>><c:choose><c:when test="${reportMode eq 'sales'}">返品のある集計区分のみ</c:when><c:when test="${reportMode eq 'backlog'}">遅延・不足・保留・停止のみ</c:when><c:otherwise>不良または遅延のある仕入先のみ</c:otherwise></c:choose></option></select></label></c:otherwise></c:choose>
+      <label>表示件数<select name="size"><c:forTokens items="10,25,50,100" delims="," var="n"><option value="<c:out value='${n}'/>" <c:if test="${form.size eq n}">selected</c:if>><c:out value="${n}"/>件</option></c:forTokens></select></label>
+    </div>
+    <p class="help">初期期間は本日までの直近31日間。指定期間は最大367日です。<c:choose><c:when test="${reportMode eq 'backlog'}">受注残の納期終了日は本日から366日先まで指定できます。</c:when><c:otherwise>実績集計の終了日は本日以前にしてください。</c:otherwise></c:choose></p>
+    <div class="actions"><button class="primary">集計・照会</button><a class="button" href="<c:out value='${ctx}'/>/operationsReports.do?op=<c:out value='${reportMode}'/>">条件クリア</a></div>
+  </form>
+  <c:if test="${not empty reportGeneratedAt}"><p class="help">取得日時：<fmt:formatDate value="${reportGeneratedAt}" pattern="yyyy-MM-dd HH:mm:ss"/></p></c:if>
+</section>

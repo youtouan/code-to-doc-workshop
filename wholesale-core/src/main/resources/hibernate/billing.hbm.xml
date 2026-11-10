@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="Invoice" table="billing_invoice">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="customer" column="customer_id" not-null="true"/>
+    <property name="customerName" column="customer_name" not-null="true" length="160"/>
+    <property name="billingAddress" column="billing_address" not-null="true" length="300"/>
+    <property name="postalCode" column="postal_code" not-null="true" length="20"/>
+    <property name="status" not-null="true" length="20"/>
+    <property name="periodStart" column="period_start" type="date" not-null="true"/>
+    <property name="periodEnd" column="period_end" type="date" not-null="true"/>
+    <property name="issuedDate" column="issued_date" type="date" not-null="true"/>
+    <property name="dueDate" column="due_date" type="date" not-null="true"/>
+    <property name="taxRounding" column="tax_rounding" not-null="true" length="10"/>
+    <property name="paymentTermDays" column="payment_term_days" not-null="true"/>
+    <property name="netAmount" column="net_amount" precision="18" scale="2" not-null="true"/>
+    <property name="taxAmount" column="tax_amount" precision="18" scale="2" not-null="true"/>
+    <property name="totalAmount" column="total_amount" precision="18" scale="2" not-null="true"/>
+    <property name="paidAmount" column="paid_amount" precision="18" scale="2" not-null="true"/>
+    <property name="creditedAmount" column="credited_amount" precision="18" scale="2" not-null="true"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="finalizedBy" column="finalized_by" length="50"/>
+    <property name="finalizedAt" column="finalized_at" type="timestamp"/>
+    <property name="cancelledBy" column="cancelled_by" length="50"/>
+    <property name="cancelledAt" column="cancelled_at" type="timestamp"/>
+    <property name="cancellationReason" column="cancellation_reason" length="500"/>
+    <property name="claimFingerprint" column="claim_fingerprint" not-null="true" length="64"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="line_number">
+      <key column="invoice_id"/>
+      <one-to-many class="InvoiceLine"/>
+    </bag>
+  </class>
+  <class name="InvoiceLine" table="billing_invoice_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="invoice" column="invoice_id" not-null="true"/>
+    <property name="lineNumber" column="line_number" not-null="true"/>
+    <many-to-one name="shipmentLine" column="shipment_line_id" not-null="true"/>
+    <property name="shipmentNumber" column="shipment_number" not-null="true" length="50"/>
+    <property name="orderNumber" column="order_number" not-null="true" length="50"/>
+    <property name="shippedDate" column="shipped_date" type="date" not-null="true"/>
+    <property name="productCode" column="product_code" not-null="true" length="30"/>
+    <property name="description" not-null="true" length="160"/>
+    <property name="unit" not-null="true" length="20"/>
+    <property name="quantity" not-null="true"/>
+    <property name="unitPrice" column="unit_price" precision="18" scale="2" not-null="true"/>
+    <property name="taxRate" column="tax_rate" precision="6" scale="4" not-null="true"/>
+    <property name="netAmount" column="net_amount" precision="18" scale="2" not-null="true"/>
+  </class>
+  <class name="CreditMemo" table="billing_credit_memo">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="customer" column="customer_id" not-null="true"/>
+    <property name="customerName" column="customer_name" not-null="true" length="160"/>
+    <many-to-one name="salesReturn" column="sales_return_id" not-null="true" unique="true"/>
+    <many-to-one name="invoice" column="invoice_id"/>
+    <property name="status" not-null="true" length="20"/>
+    <property name="issuedDate" column="issued_date" type="date" not-null="true"/>
+    <property name="postedDate" column="posted_date" type="date"/>
+    <property name="taxRounding" column="tax_rounding" not-null="true" length="10"/>
+    <property name="netAmount" column="net_amount" precision="18" scale="2" not-null="true"/>
+    <property name="taxAmount" column="tax_amount" precision="18" scale="2" not-null="true"/>
+    <property name="totalAmount" column="total_amount" precision="18" scale="2" not-null="true"/>
+    <property name="appliedAmount" column="applied_amount" precision="18" scale="2" not-null="true"/>
+    <property name="sourceFingerprint" column="source_fingerprint" not-null="true" length="64"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="line_number">
+      <key column="credit_memo_id"/>
+      <one-to-many class="CreditMemoLine"/>
+    </bag>
+  </class>
+  <class name="CreditMemoLine" table="billing_credit_memo_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="creditMemo" column="credit_memo_id" not-null="true"/>
+    <many-to-one name="salesReturnLine" column="sales_return_line_id" not-null="true" unique="true"/>
+    <many-to-one name="shipmentLine" column="shipment_line_id" not-null="true"/>
+    <property name="lineNumber" column="line_number" not-null="true"/>
+    <property name="productCode" column="product_code" not-null="true" length="30"/>
+    <property name="description" not-null="true" length="160"/>
+    <property name="quantity" not-null="true"/>
+    <property name="unitPrice" column="unit_price" precision="18" scale="2" not-null="true"/>
+    <property name="taxRate" column="tax_rate" precision="6" scale="4" not-null="true"/>
+    <property name="netAmount" column="net_amount" precision="18" scale="2" not-null="true"/>
+  </class>
+  <class name="PaymentReceipt" table="billing_payment_receipt">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="customer" column="customer_id" not-null="true"/>
+    <property name="customerName" column="customer_name" not-null="true" length="160"/>
+    <property name="requestKey" column="request_key" not-null="true" unique="true" length="100"/>
+    <property name="payloadFingerprint" column="payload_fingerprint" not-null="true" length="64"/>
+    <property name="receivedDate" column="received_date" type="date" not-null="true"/>
+    <property name="amount" precision="18" scale="2" not-null="true"/>
+    <property name="allocatedAmount" column="allocated_amount" precision="18" scale="2" not-null="true"/>
+    <property name="method" not-null="true" length="30"/>
+    <property name="reference" not-null="true" length="100"/>
+    <property name="notes" not-null="true" length="1000"/>
+    <property name="status" not-null="true" length="20"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="cancelledBy" column="cancelled_by" length="50"/>
+    <property name="cancelledAt" column="cancelled_at" type="timestamp"/>
+    <property name="cancellationDate" column="cancellation_date" type="date"/>
+    <property name="cancellationReason" column="cancellation_reason" length="500"/>
+    <bag name="allocations" inverse="true" lazy="true" order-by="id">
+      <key column="receipt_id"/>
+      <one-to-many class="PaymentAllocation"/>
+    </bag>
+  </class>
+  <class name="PaymentAllocation" table="billing_payment_allocation">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="receipt" column="receipt_id" not-null="true"/>
+    <many-to-one name="invoice" column="invoice_id" not-null="true"/>
+    <property name="amount" precision="18" scale="2" not-null="true"/>
+    <property name="allocationDate" column="allocation_date" type="date" not-null="true"/>
+    <property name="status" not-null="true" length="20"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="reversedBy" column="reversed_by" length="50"/>
+    <property name="reversedAt" column="reversed_at" type="timestamp"/>
+    <property name="reversalDate" column="reversal_date" type="date"/>
+    <property name="reversalReason" column="reversal_reason" length="500"/>
+  </class>
+</hibernate-mapping>

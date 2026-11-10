@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="SalesOrder" table="sales_order">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="customer" column="customer_id" not-null="true"/>
+    <many-to-one name="warehouse" column="warehouse_id" not-null="true"/>
+    <property name="customerName" column="customer_name" not-null="true" length="160"/>
+    <property name="deliveryAddress" column="delivery_address" not-null="true" length="300"/>
+    <property name="orderDate" column="order_date" type="date" not-null="true"/>
+    <property name="requestedDate" column="requested_date" type="date" not-null="true"/>
+    <property name="status" not-null="true" length="30"/>
+    <property name="externalReference" column="external_reference" not-null="true" length="80"/>
+    <property name="notes" not-null="true" length="1000"/>
+    <property name="taxRounding" column="tax_rounding" not-null="true" length="20"/>
+    <property name="netAmount" column="net_amount" not-null="true" precision="18" scale="2"/>
+    <property name="taxAmount" column="tax_amount" not-null="true" precision="18" scale="2"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="approvedBy" column="approved_by" length="50"/>
+    <property name="approvedAt" column="approved_at" type="timestamp"/>
+    <property name="cancellationReason" column="cancellation_reason" length="500"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="line_number">
+      <key column="order_id"/>
+      <one-to-many class="SalesOrderLine"/>
+    </bag>
+  </class>
+  <class name="SalesOrderLine" table="sales_order_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="order" column="order_id" not-null="true"/>
+    <property name="lineNumber" column="line_number" not-null="true"/>
+    <many-to-one name="product" column="product_id" not-null="true"/>
+    <property name="productCode" column="product_code" not-null="true" length="30"/>
+    <property name="productName" column="product_name" not-null="true" length="160"/>
+    <property name="unit" not-null="true" length="20"/>
+    <property name="packSize" column="pack_size" not-null="true"/>
+    <property name="quantity" not-null="true"/>
+    <property name="allocatedQuantity" column="allocated_quantity" not-null="true"/>
+    <property name="shippedQuantity" column="shipped_quantity" not-null="true"/>
+    <property name="cancelledQuantity" column="cancelled_quantity" not-null="true"/>
+    <property name="unitPrice" column="unit_price" not-null="true" precision="18" scale="2"/>
+    <property name="taxRate" column="tax_rate" not-null="true" precision="6" scale="4"/>
+    <property name="priceReason" column="price_reason" not-null="true" length="300"/>
+  </class>
+</hibernate-mapping>

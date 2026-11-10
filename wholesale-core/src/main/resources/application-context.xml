@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+  <context:property-placeholder location="classpath:database.properties" system-properties-mode="OVERRIDE"/>
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="org.postgresql.Driver"/>
+    <property name="url" value="${db.url}"/>
+    <property name="username" value="${db.username}"/>
+    <property name="password" value="${db.password}"/>
+  </bean>
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="mappingLocations" value="classpath*:hibernate/*.hbm.xml"/>
+    <property name="hibernateProperties">
+      <props>
+        <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+        <prop key="hibernate.hbm2ddl.auto">validate</prop>
+        <prop key="hibernate.show_sql">${db.showSql}</prop>
+        <prop key="hibernate.format_sql">false</prop>
+        <prop key="hibernate.jdbc.batch_size">25</prop>
+        <prop key="hibernate.jdbc.fetch_size">50</prop>
+        <prop key="hibernate.connection.release_mode">after_transaction</prop>
+        <prop key="hibernate.cache.use_second_level_cache">false</prop>
+        <prop key="hibernate.cache.use_query_cache">false</prop>
+      </props>
+    </property>
+  </bean>
+  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  <bean id="wholesaleDao" class="jp.co.tsubame.wholesale.dao.WholesaleDao">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  <bean id="baseService" abstract="true">
+    <property name="dao" ref="wholesaleDao"/>
+  </bean>
+  <tx:advice id="serviceTransactions" transaction-manager="transactionManager">
+    <tx:attributes>
+      <tx:method name="get*" read-only="true"/>
+      <tx:method name="find*" read-only="true"/>
+      <tx:method name="search*" read-only="true"/>
+      <tx:method name="list*" read-only="true"/>
+      <tx:method name="preview*" read-only="true"/>
+      <tx:method name="*" rollback-for="java.lang.Exception"/>
+    </tx:attributes>
+  </tx:advice>
+  <tx:advice id="inventoryTransactions" transaction-manager="transactionManager">
+    <tx:attributes>
+      <tx:method name="reserve" propagation="MANDATORY" rollback-for="java.lang.Exception"/>
+      <tx:method name="release" propagation="MANDATORY" rollback-for="java.lang.Exception"/>
+      <tx:method name="consume" propagation="MANDATORY" rollback-for="java.lang.Exception"/>
+      <tx:method name="get*" read-only="true"/>
+      <tx:method name="search*" read-only="true"/>
+      <tx:method name="list*" read-only="true"/>
+      <tx:method name="*" rollback-for="java.lang.Exception"/>
+    </tx:attributes>
+  </tx:advice>
+  <tx:advice id="batchJournalTransactions" transaction-manager="transactionManager">
+    <tx:attributes>
+      <tx:method name="record*" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+      <tx:method name="completeRow" propagation="MANDATORY" rollback-for="java.lang.Exception"/>
+      <tx:method name="lockRunning" propagation="MANDATORY" rollback-for="java.lang.Exception"/>
+      <tx:method name="get*" read-only="true"/>
+      <tx:method name="find*" read-only="true"/>
+      <tx:method name="list*" read-only="true"/>
+      <tx:method name="*" rollback-for="java.lang.Exception"/>
+    </tx:attributes>
+  </tx:advice>
+  <tx:advice id="batchRowTransactions" transaction-manager="transactionManager">
+    <tx:attributes>
+      <tx:method name="executeRow" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+      <tx:method name="*" rollback-for="java.lang.Exception"/>
+    </tx:attributes>
+  </tx:advice>
+  <aop:config proxy-target-class="true">
+    <aop:advisor advice-ref="serviceTransactions"
+                 pointcut="bean(*Service) and !bean(baseService) and !bean(inventoryService) and !bean(batchRunService) and !bean(batchRowService)"/>
+    <aop:advisor advice-ref="inventoryTransactions" pointcut="bean(inventoryService)"/>
+    <aop:advisor advice-ref="batchJournalTransactions" pointcut="bean(batchRunService)"/>
+    <aop:advisor advice-ref="batchRowTransactions" pointcut="bean(batchRowService)"/>
+  </aop:config>
+  <import resource="classpath*:spring/module-*.xml"/>
+</beans>

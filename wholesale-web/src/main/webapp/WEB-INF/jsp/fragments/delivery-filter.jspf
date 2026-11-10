@@ -1,0 +1,13 @@
+<%@ page pageEncoding="UTF-8" %>
+<form action="<c:out value='${ctx}'/>/deliveryAttempts.do" method="get" class="toolbar" role="search">
+  <input type="hidden" name="op" value="<c:out value='${queueMode ? "list" : "detail"}'/>">
+  <c:choose><c:when test="${queueMode}"><label>出荷ID（任意）<input type="text" name="shipmentId" maxlength="19" inputmode="numeric" value="<c:out value='${form.shipmentId}'/>"></label></c:when><c:otherwise><input type="hidden" name="shipmentId" value="<c:out value='${form.shipmentId}'/>"></c:otherwise></c:choose>
+  <c:if test="${queueMode}"><label>倉庫<select name="warehouseId"><option value="">すべて</option><c:forEach items="${warehouses}" var="warehouse"><option value="<c:out value='${warehouse.id}'/>" <c:if test="${form.warehouseId eq fn:escapeXml(warehouse.id)}">selected</c:if>><c:out value="${warehouse.name}"/></option></c:forEach></select></label><label>得意先<select name="customerId"><option value="">すべて</option><c:forEach items="${customers}" var="customer"><option value="<c:out value='${customer.id}'/>" <c:if test="${form.customerId eq fn:escapeXml(customer.id)}">selected</c:if>><c:out value="${customer.name}"/></option></c:forEach></select></label></c:if>
+  <label>結果<select name="status"><option value=""><c:out value="${queueMode ? 'FAILED・RESCHEDULED' : 'すべての履歴'}"/></option><c:forTokens items="DELIVERED,FAILED,RESCHEDULED" delims="," var="outcome"><option value="<c:out value='${outcome}'/>" <c:if test="${form.status eq outcome}">selected</c:if>><c:out value="${outcome}"/></option></c:forTokens><c:if test="${not queueMode}"><option value="REVERSED" <c:if test="${form.status eq 'REVERSED'}">selected</c:if>>REVERSED</option></c:if></select></label>
+  <label>試行業務日・開始<input type="date" name="from" value="<c:out value='${form.from}'/>"></label><label>試行業務日・終了<input type="date" name="to" value="<c:out value='${form.to}'/>"></label>
+  <label>記録締切日時（空欄＝現在）<input type="datetime-local" step="0.001" name="asOfRecordedAt" value="<c:out value='${form.asOfRecordedAt}'/>"></label>
+  <label>次回予定日／試行日の期限<input type="date" name="dueOnOrBefore" value="<c:out value='${form.dueOnOrBefore}'/>"></label>
+  <label>出荷番号・会社・参照番号<input type="search" name="text" maxlength="100" value="<c:out value='${form.text}'/>"></label>
+  <label>表示件数<select name="size"><c:forTokens items="10,25,50,100" delims="," var="n"><option value="<c:out value='${n}'/>" <c:if test="${form.size eq n}">selected</c:if>><c:out value="${n}"/>件</option></c:forTokens></select></label>
+  <button class="primary">照会</button>
+</form>

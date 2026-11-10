@@ -1,0 +1,11 @@
+<%@ include file="../fragments/tags.jspf" %>
+<%@ include file="../fragments/header.jspf" %>
+<section class="card"><h2><c:out value="${purchase.number}"/> · <c:out value="${purchase.supplierName}"/></h2><p class="help">今回検品した良品・不良数量を入力してください。良品だけを在庫へ入庫します。不良数量は残発注を減らさないため、代品の再納品を受け付けられます。</p>
+  <html:form action="/purchaseReceipts" method="post"><%@ include file="../fragments/token.jspf" %><html:hidden property="orderId"/><html:hidden property="version"/><html:hidden property="requestKey"/><input type="hidden" name="op" value="receive">
+    <div class="field-grid"><label>入荷日<input type="date" name="receiptDate" value="<c:out value='${form.receiptDate}'/>" required></label><label>仕入先納品番号<html:text property="supplierDeliveryNumber" maxlength="100"/></label><label class="wide">検品備考<html:textarea property="notes" rows="3"/></label></div>
+    <div class="table-wrap"><table><thead><tr><th>商品</th><th class="number">発注残数</th><th>今回良品</th><th>今回不良</th><th>不良理由 / 備考</th></tr></thead><tbody>
+      <c:forEach items="${purchase.lines}" var="line" varStatus="row"><tr><td><c:out value="${line.productCode}"/> <c:out value="${line.productName}"/><input type="hidden" name="lineId" value="<c:out value='${line.id}'/>"></td><td class="number"><c:out value="${line.outstandingQuantity}"/></td><td><input type="text" name="acceptedQuantity" maxlength="9" inputmode="numeric" aria-label="今回良品数量" value="<c:out value='${form.acceptedQuantity[row.index]}'/>"></td><td><input type="text" name="rejectedQuantity" maxlength="9" inputmode="numeric" aria-label="今回不良数量" value="<c:out value='${form.rejectedQuantity[row.index]}'/>"></td><td><label>不良理由<input type="text" name="rejectionReason" maxlength="500" value="<c:out value='${form.rejectionReason[row.index]}'/>"></label><label>明細備考<input type="text" name="lineNote" maxlength="500" value="<c:out value='${form.lineNote[row.index]}'/>"></label></td></tr></c:forEach>
+    </tbody></table></div><div class="actions"><button class="primary">検品を確定・良品を入庫</button><a class="button" href="<c:out value='${ctx}'/>/purchases.do?op=detail&amp;id=<c:out value='${purchase.id}'/>">発注へ戻る</a></div>
+  </html:form>
+</section>
+<%@ include file="../fragments/footer.jspf" %>

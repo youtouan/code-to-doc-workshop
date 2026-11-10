@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <bean id="inventoryLedger" class="jp.co.tsubame.wholesale.dao.InventoryLedger">
+    <property name="dao" ref="wholesaleDao"/>
+  </bean>
+  <bean id="inventoryService" class="jp.co.tsubame.wholesale.service.InventoryService" parent="baseService">
+    <property name="ledger" ref="inventoryLedger"/>
+  </bean>
+  <bean id="orderService" class="jp.co.tsubame.wholesale.service.OrderService" parent="baseService">
+    <property name="catalogService" ref="catalogService"/>
+    <property name="inventoryService" ref="inventoryService"/>
+    <property name="creditService" ref="creditService"/>
+  </bean>
+  <bean id="shippingService" class="jp.co.tsubame.wholesale.service.ShippingService" parent="baseService">
+    <property name="inventoryService" ref="inventoryService"/>
+    <property name="ledger" ref="inventoryLedger"/>
+    <property name="billingService" ref="billingService"/>
+    <property name="carriers">
+      <map>
+        <entry key="OWN" value="自社配送"/>
+        <entry key="PARCEL" value="小口便"/>
+        <entry key="FREIGHT" value="路線貨物"/>
+      </map>
+    </property>
+  </bean>
+</beans>

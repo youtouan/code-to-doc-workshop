@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <bean id="billingService" class="jp.co.tsubame.wholesale.service.BillingService" parent="baseService"/>
+  <bean id="receivablesService" class="jp.co.tsubame.wholesale.service.ReceivablesService" parent="baseService"/>
+  <bean id="creditService" class="jp.co.tsubame.wholesale.service.CreditService" parent="baseService"/>
+</beans>

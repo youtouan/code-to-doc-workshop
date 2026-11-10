@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="Quotation" table="quotation">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" length="50" not-null="true" unique="true"/>
+    <many-to-one name="customer" column="customer_id" not-null="true"/>
+    <many-to-one name="warehouse" column="warehouse_id" not-null="true"/>
+    <property name="revisionNumber" column="revision_number" not-null="true"/>
+    <property name="status" length="20" not-null="true"/>
+    <property name="createdById" column="created_by_id" not-null="true"/>
+    <property name="createdBy" column="created_by" length="50" not-null="true"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="submittedById" column="submitted_by_id"/>
+    <property name="submittedBy" column="submitted_by" length="50"/>
+    <property name="submittedAt" column="submitted_at" type="timestamp"/>
+    <property name="approvedById" column="approved_by_id"/>
+    <property name="approvedBy" column="approved_by" length="50"/>
+    <property name="approvedAt" column="approved_at" type="timestamp"/>
+    <property name="approvedFingerprint" column="approved_fingerprint" length="64"/>
+    <property name="acceptedById" column="accepted_by_id"/>
+    <property name="acceptedBy" column="accepted_by" length="50"/>
+    <property name="acceptedAt" column="accepted_at" type="timestamp"/>
+    <property name="acceptedOn" column="accepted_on" type="date"/>
+    <property name="acceptanceReference" column="acceptance_reference" length="120" not-null="true"/>
+    <many-to-one name="convertedOrder" column="converted_order_id" unique="true"/>
+    <property name="convertedAt" column="converted_at" type="timestamp"/>
+    <property name="updatedAt" column="updated_at" type="timestamp" not-null="true"/>
+    <bag name="revisions" inverse="true" cascade="save-update" lazy="true" order-by="revision_number">
+      <key column="quotation_id"/><one-to-many class="QuotationRevision"/>
+    </bag>
+  </class>
+  <class name="QuotationRevision" table="quotation_revision" mutable="false">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="quotation" column="quotation_id" not-null="true"/>
+    <property name="revisionNumber" column="revision_number" not-null="true"/>
+    <many-to-one name="warehouse" column="warehouse_id" not-null="true"/>
+    <property name="customerName" column="customer_name" length="160" not-null="true"/>
+    <property name="quoteDate" column="quote_date" type="date" not-null="true"/>
+    <property name="validUntil" column="valid_until" type="date" not-null="true"/>
+    <property name="requestedDate" column="requested_date" type="date" not-null="true"/>
+    <property name="deliveryAddress" column="delivery_address" length="300" not-null="true"/>
+    <property name="externalReference" column="external_reference" length="80" not-null="true"/>
+    <property name="notes" length="1000" not-null="true"/>
+    <property name="taxRounding" column="tax_rounding" length="10" not-null="true"/>
+    <property name="netAmount" column="net_amount" precision="18" scale="2" not-null="true"/>
+    <property name="taxAmount" column="tax_amount" precision="18" scale="2" not-null="true"/>
+    <property name="fingerprint" length="64" not-null="true"/>
+    <property name="authoredById" column="authored_by_id" not-null="true"/>
+    <property name="authoredBy" column="authored_by" length="50" not-null="true"/>
+    <property name="authoredAt" column="authored_at" type="timestamp" not-null="true"/>
+    <property name="changeReason" column="change_reason" length="500" not-null="true"/>
+    <bag name="lines" inverse="true" cascade="save-update" lazy="true" order-by="line_number">
+      <key column="revision_id"/><one-to-many class="QuotationLine"/>
+    </bag>
+  </class>
+  <class name="QuotationLine" table="quotation_line" mutable="false">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="revision" column="revision_id" not-null="true"/>
+    <property name="lineNumber" column="line_number" not-null="true"/>
+    <many-to-one name="product" column="product_id" not-null="true"/>
+    <property name="productCode" column="product_code" length="30" not-null="true"/>
+    <property name="productName" column="product_name" length="160" not-null="true"/>
+    <property name="unit" length="20" not-null="true"/>
+    <property name="packSize" column="pack_size" not-null="true"/>
+    <property name="quantity" not-null="true"/>
+    <property name="catalogUnitPrice" column="catalog_unit_price" precision="18" scale="2" not-null="true"/>
+    <property name="unitPrice" column="unit_price" precision="18" scale="2" not-null="true"/>
+    <property name="taxRate" column="tax_rate" precision="6" scale="4" not-null="true"/>
+    <property name="negotiationReason" column="negotiation_reason" length="300" not-null="true"/>
+    <property name="negotiated" not-null="true"/>
+  </class>
+  <class name="QuotationEvent" table="quotation_event" mutable="false">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="quotation" column="quotation_id" not-null="true"/>
+    <property name="revisionNumber" column="revision_number" not-null="true"/>
+    <property name="operation" length="40" not-null="true"/>
+    <property name="fromStatus" column="from_status" length="20" not-null="true"/>
+    <property name="toStatus" column="to_status" length="20" not-null="true"/>
+    <property name="reason" length="500" not-null="true"/>
+    <property name="fingerprint" length="64" not-null="true"/>
+    <property name="actorId" column="actor_id" not-null="true"/>
+    <property name="actor" length="50" not-null="true"/>
+    <property name="occurredAt" column="occurred_at" type="timestamp" not-null="true"/>
+  </class>
+  <class name="OrderAmendment" table="order_amendment">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" length="50" not-null="true" unique="true"/>
+    <many-to-one name="order" column="order_id" not-null="true"/>
+    <property name="baseOrderVersion" column="base_order_version" not-null="true"/>
+    <property name="sourceFingerprint" column="source_fingerprint" length="64" not-null="true"/>
+    <property name="status" length="20" not-null="true"/>
+    <property name="originalRequestedDate" column="original_requested_date" type="date" not-null="true"/>
+    <property name="requestedDate" column="requested_date" type="date" not-null="true"/>
+    <property name="reason" length="500" not-null="true"/>
+    <property name="requestedById" column="requested_by_id" not-null="true"/>
+    <property name="requestedBy" column="requested_by" length="50" not-null="true"/>
+    <property name="requestedAt" column="requested_at" type="timestamp" not-null="true"/>
+    <property name="decidedById" column="decided_by_id"/>
+    <property name="decidedBy" column="decided_by" length="50"/>
+    <property name="decidedAt" column="decided_at" type="timestamp"/>
+    <property name="decisionReason" column="decision_reason" length="500" not-null="true"/>
+    <property name="originalNetAmount" column="original_net_amount" precision="18" scale="2" not-null="true"/>
+    <property name="originalTaxAmount" column="original_tax_amount" precision="18" scale="2" not-null="true"/>
+    <property name="proposedNetAmount" column="proposed_net_amount" precision="18" scale="2" not-null="true"/>
+    <property name="proposedTaxAmount" column="proposed_tax_amount" precision="18" scale="2" not-null="true"/>
+    <property name="exposureDelta" column="exposure_delta" precision="18" scale="2" not-null="true"/>
+    <property name="appliedOrderVersion" column="applied_order_version"/>
+    <bag name="lines" inverse="true" cascade="save-update" lazy="true" order-by="order_line_id">
+      <key column="amendment_id"/><one-to-many class="OrderAmendmentLine"/>
+    </bag>
+  </class>
+  <class name="OrderAmendmentLine" table="order_amendment_line" mutable="false">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="amendment" column="amendment_id" not-null="true"/>
+    <many-to-one name="orderLine" column="order_line_id" not-null="true"/>
+    <property name="originalQuantity" column="original_quantity" not-null="true"/>
+    <property name="targetQuantity" column="target_quantity" not-null="true"/>
+    <property name="originalAllocatedQuantity" column="original_allocated_quantity" not-null="true"/>
+    <property name="originalShippedQuantity" column="original_shipped_quantity" not-null="true"/>
+    <property name="originalCancelledQuantity" column="original_cancelled_quantity" not-null="true"/>
+    <property name="packSize" column="pack_size" not-null="true"/>
+    <property name="unitPrice" column="unit_price" precision="18" scale="2" not-null="true"/>
+    <property name="taxRate" column="tax_rate" precision="6" scale="4" not-null="true"/>
+  </class>
+</hibernate-mapping>

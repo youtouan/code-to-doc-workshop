@@ -1,0 +1,12 @@
+<%@ include file="../fragments/tags.jspf" %>
+<%@ include file="../fragments/header.jspf" %>
+<section class="card"><h2><c:out value="${apCredit.number}"/> <span class="badge"><c:out value="${apCredit.status}"/></span></h2>
+  <dl><dt>仕入先 / 値引番号</dt><dd><c:out value="${apCredit.supplier.name}"/> / <c:out value="${apCredit.supplierCreditNumber}"/></dd>
+    <dt>元請求</dt><dd><a href="<c:out value='${ctx}'/>/apInvoices.do?op=detail&amp;id=<c:out value='${apCredit.invoice.id}'/>"><c:out value="${apCredit.invoice.number}"/></a></dd><dt>値引日 / 計上日</dt><dd><fmt:formatDate value="${apCredit.creditDate}" pattern="yyyy-MM-dd"/> / <fmt:formatDate value="${apCredit.postedDate}" pattern="yyyy-MM-dd"/></dd>
+    <dt>値引理由</dt><dd class="prewrap"><c:out value="${apCredit.reason}"/></dd><dt>税抜 / 消費税 / 合計</dt><dd><fmt:formatNumber value="${apCredit.netAmount}" pattern="#,##0.00"/> / <fmt:formatNumber value="${apCredit.taxAmount}" pattern="#,##0.00"/> / <fmt:formatNumber value="${apCredit.totalAmount}" pattern="#,##0.00"/> 円</dd><dt>申請者 / 承認者</dt><dd><c:out value="${apCredit.createdBy}"/> / <c:out value="${apCredit.approvedBy}"/></dd><dt>取消理由</dt><dd><c:out value="${apCredit.cancellationReason}"/></dd>
+  </dl>
+</section>
+<section class="card"><h2>財務値引明細</h2><div class="table-wrap"><table><thead><tr><th>行 / 品名</th><th class="number">税抜値引額</th><th>税率</th></tr></thead><tbody><c:forEach items="${apCredit.lines}" var="line"><tr><td><c:out value="${line.lineNumber}"/> · <c:out value="${line.description}"/></td><td class="number"><fmt:formatNumber value="${line.netAmount}" pattern="#,##0.00"/></td><td><fmt:formatNumber value="${line.taxRate}" type="percent" maxFractionDigits="2"/></td></tr></c:forEach></tbody></table></div></section>
+<c:if test="${apCredit.status eq 'DRAFT'}"><section class="card"><h2>独立承認・申請取消</h2><form action="<c:out value='${ctx}'/>/apCredits.do" method="post"><%@ include file="../fragments/identity.jspf" %><label>取消理由<textarea name="reason" maxlength="500"><c:out value="${form.reason}"/></textarea></label><div class="actions"><c:if test="${canMANAGER and apCredit.createdById ne actor.userId}"><button name="op" value="approve" class="primary">承認して買掛金を減額</button></c:if><c:if test="${canBILLING}"><button name="op" value="cancel" class="danger">値引申請を取消</button></c:if></div></form></section></c:if>
+<div class="actions"><a class="button" href="<c:out value='${ctx}'/>/apCredits.do">一覧へ</a></div>
+<%@ include file="../fragments/footer.jspf" %>

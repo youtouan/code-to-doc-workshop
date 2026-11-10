@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="StockBalance" table="stock_balance">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="warehouse" column="warehouse_id" not-null="true"/>
+    <many-to-one name="product" column="product_id" not-null="true"/>
+    <property name="onHand" column="on_hand" not-null="true"/>
+    <property name="reserved" not-null="true"/>
+    <property name="blocked" not-null="true"/>
+    <property name="lastMovementAt" column="last_movement_at" type="timestamp"/>
+  </class>
+  <class name="StockReceipt" table="stock_receipt">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <property name="requestKey" column="request_key" not-null="true" unique="true" length="120"/>
+    <property name="fingerprint" not-null="true" length="64"/>
+    <many-to-one name="warehouse" column="warehouse_id" not-null="true"/>
+    <many-to-one name="product" column="product_id" not-null="true"/>
+    <property name="quantity" not-null="true"/>
+    <property name="unitCost" column="unit_cost" not-null="true" precision="18" scale="2"/>
+    <property name="receiptDate" column="receipt_date" type="date" not-null="true"/>
+    <property name="reference" not-null="true" length="80"/>
+    <property name="note" not-null="true" length="500"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+  </class>
+  <class name="StockMovement" table="stock_movement" mutable="false">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="balance" column="balance_id" not-null="true"/>
+    <property name="movementType" column="movement_type" not-null="true" length="30"/>
+    <property name="quantityChange" column="quantity_change" not-null="true"/>
+    <property name="reservedChange" column="reserved_change" not-null="true"/>
+    <property name="onHandAfter" column="on_hand_after" not-null="true"/>
+    <property name="reservedAfter" column="reserved_after" not-null="true"/>
+    <property name="documentType" column="document_type" not-null="true" length="40"/>
+    <property name="documentId" column="document_id" not-null="true"/>
+    <property name="documentNumber" column="document_number" not-null="true" length="50"/>
+    <property name="actor" not-null="true" length="50"/>
+    <property name="note" not-null="true" length="500"/>
+    <property name="occurredAt" column="occurred_at" type="timestamp" not-null="true"/>
+  </class>
+  <class name="Reservation" table="stock_reservation">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="orderLine" column="order_line_id" not-null="true" unique="true"/>
+    <many-to-one name="balance" column="balance_id" not-null="true"/>
+    <property name="quantity" not-null="true"/>
+    <property name="updatedAt" column="updated_at" type="timestamp" not-null="true"/>
+  </class>
+</hibernate-mapping>

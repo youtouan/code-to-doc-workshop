@@ -1,0 +1,21 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:if test="${not empty results}">
+  <div class="pagination">
+    <span class="muted">全 <c:out value="${results.total}"/> 件 · <c:out value="${results.number}"/> / <c:out value="${results.pageCount}"/> ページ</span>
+    <div class="actions">
+      <c:forTokens items="previous,next" delims="," var="direction">
+        <c:if test="${(direction eq 'previous' and results.hasPrevious) or (direction eq 'next' and results.hasNext)}">
+          <c:url value="${route}" var="pageUrl">
+            <c:param name="op" value="${not empty form.id ? 'detail' : form.op}"/><c:param name="id" value="${form.id}"/>
+            <c:param name="text" value="${form.text}"/><c:param name="status" value="${form.status}"/>
+            <c:param name="customerId" value="${form.customerId}"/><c:param name="warehouseId" value="${form.warehouseId}"/>
+            <c:param name="from" value="${form.from}"/><c:param name="to" value="${form.to}"/>
+            <c:forEach items="${extraPageParameters}" var="extra"><c:param name="${extra.key}" value="${extra.value}"/></c:forEach>
+            <c:param name="size" value="${form.size}"/><c:param name="pageNumber" value="${direction eq 'previous' ? results.number - 1 : results.number + 1}"/>
+          </c:url>
+          <a class="button" href="<c:out value='${pageUrl}'/>"><c:out value="${direction eq 'previous' ? '← 前へ' : '次へ →'}"/></a>
+        </c:if>
+      </c:forTokens>
+    </div>
+  </div>
+</c:if>

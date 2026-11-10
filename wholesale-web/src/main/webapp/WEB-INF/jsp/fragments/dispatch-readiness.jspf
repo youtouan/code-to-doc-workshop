@@ -1,0 +1,7 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:if test="${manifest.status eq 'DRAFT' or manifest.status eq 'RELEASED'}">
+  <section class="card"><h2>出発前の準備確認 <span class="badge"><c:out value="${readiness.ready ? '現在の照会では準備OK' : '要確認'}"/></span></h2>
+    <p class="help">これは照会時点の参考情報です。公開・一括出荷確定時にロック下で再検査します。在庫の追加予約や運送会社への送信は行いません。</p>
+    <c:if test="${not empty readiness.issues}"><ul><c:forEach items="${readiness.issues}" var="issue"><li><c:if test="${not empty issue.shipmentId}">出荷ID <c:out value="${issue.shipmentId}"/>：</c:if><c:out value="${issue.message}"/> <span class="muted">(<c:out value="${issue.code}"/>)</span></li></c:forEach></ul></c:if>
+  </section>
+</c:if>

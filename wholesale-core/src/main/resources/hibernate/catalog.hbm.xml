@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="Customer" table="customer">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="code" length="30" not-null="true" unique="true"/>
+    <property name="name" length="120" not-null="true"/>
+    <property name="active" not-null="true"/>
+    <property name="onHold" column="on_hold" not-null="true"/>
+    <property name="creditLimit" column="credit_limit" precision="18" scale="2" not-null="true"/>
+    <property name="closingDay" column="closing_day" not-null="true"/>
+    <property name="paymentTermDays" column="payment_term_days" not-null="true"/>
+    <property name="taxRounding" column="tax_rounding" length="10" not-null="true"/>
+    <property name="postalCode" column="postal_code" length="12" not-null="true"/>
+    <property name="address" length="250" not-null="true"/>
+    <property name="telephone" length="30" not-null="true"/>
+    <property name="notes" length="1000" not-null="true"/>
+  </class>
+  <class name="Product" table="product">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="code" length="30" not-null="true" unique="true"/>
+    <property name="name" length="120" not-null="true"/>
+    <property name="unit" length="20" not-null="true"/>
+    <property name="taxCategory" column="tax_category" length="10" not-null="true"/>
+    <property name="listPrice" column="list_price" precision="18" scale="2" not-null="true"/>
+    <property name="standardCost" column="standard_cost" precision="18" scale="2" not-null="true"/>
+    <property name="packSize" column="pack_size" not-null="true"/>
+    <property name="reorderPoint" column="reorder_point" not-null="true"/>
+    <property name="reorderQuantity" column="reorder_quantity" not-null="true"/>
+    <property name="active" not-null="true"/>
+    <property name="notes" length="1000" not-null="true"/>
+  </class>
+  <class name="Warehouse" table="warehouse">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="code" length="30" not-null="true" unique="true"/>
+    <property name="name" length="120" not-null="true"/>
+    <property name="address" length="250" not-null="true"/>
+    <property name="active" not-null="true"/>
+  </class>
+  <class name="PriceAgreement" table="price_agreement">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="customer" column="customer_id" not-null="true"/>
+    <many-to-one name="product" column="product_id" not-null="true"/>
+    <property name="validFrom" column="valid_from" type="date" not-null="true"/>
+    <property name="validTo" column="valid_to" type="date"/>
+    <property name="minimumQuantity" column="minimum_quantity" not-null="true"/>
+    <property name="unitPrice" column="unit_price" precision="18" scale="2" not-null="true"/>
+    <property name="notes" length="1000" not-null="true"/>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,6 @@
+external_key,customer_code,warehouse_code,order_date,requested_date,external_reference,delivery_address,product_code,quantity,notes
+CSV-ORDER-001,C001,EAST,2026-09-01,2026-09-08,CSV-PO-001,,P001,2,"架空注文の備考
+同じ注文の全行で一致"
+CSV-ORDER-001,C001,EAST,2026-09-01,2026-09-08,CSV-PO-001,,P002,5,"架空注文の備考
+同じ注文の全行で一致"
+CSV-ORDER-002,C002,WEST,2026-09-01,2026-09-08,CSV-PO-002,,P003,24,別の注文・価格はコアの契約単価から確定

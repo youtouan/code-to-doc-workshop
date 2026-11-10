@@ -1,0 +1,4 @@
+<%@ page pageEncoding="UTF-8" %>
+<%@ include file="token.jspf" %>
+<input type="hidden" name="id" value="<c:out value='${form.id}'/>">
+<input type="hidden" name="version" value="<c:out value='${form.version}'/>">

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "hooks": {
+    "agentStop": [
+      {
+        "type": "command",
+        "bash": "node .github/skills/as-is-documentation/scripts/notify-evidence.mjs",
+        "powershell": "node .github\\skills\\as-is-documentation\\scripts\\notify-evidence.mjs",
+        "cwd": ".",
+        "timeoutSec": 30
+      }
+    ]
+  }
+}

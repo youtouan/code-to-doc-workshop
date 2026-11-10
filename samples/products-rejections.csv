@@ -1,0 +1,5 @@
+code,name,unit,tax_category,list_price,standard_cost,pack_size,reorder_point,reorder_quantity,active,notes
+CSV-OK,架空正常商品,個,STANDARD,100.00,50.00,1,5,10,true,正常行は独立して確定
+CSV-BAD-PRICE,架空不正価格,個,STANDARD,1e3,50.00,1,5,10,true,指数表記を拒否
+CSV-BAD-BOOL,架空不正真偽,個,STANDARD,100.00,50.00,1,5,10,yes,trueまたはfalseのみ
+CSV-BAD-PACK,架空不正梱包,個,STANDARD,100.00,50.00,0,5,10,true,梱包数0を業務サービスが拒否

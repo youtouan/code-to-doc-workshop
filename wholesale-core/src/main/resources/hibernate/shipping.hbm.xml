@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="Shipment" table="shipping_shipment">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="order" column="order_id" not-null="true"/>
+    <property name="status" not-null="true" length="30"/>
+    <property name="plannedDate" column="planned_date" type="date" not-null="true"/>
+    <property name="shippedDate" column="shipped_date" type="date"/>
+    <property name="carrier" not-null="true" length="30"/>
+    <property name="trackingNumber" column="tracking_number" not-null="true" length="80"/>
+    <property name="note" not-null="true" length="500"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="confirmedBy" column="confirmed_by" length="50"/>
+    <property name="confirmedAt" column="confirmed_at" type="timestamp"/>
+    <property name="cancellationReason" column="cancellation_reason" length="500"/>
+    <many-to-one name="invoice" column="invoice_id"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="line_number">
+      <key column="shipment_id"/>
+      <one-to-many class="ShipmentLine"/>
+    </bag>
+  </class>
+  <class name="ShipmentLine" table="shipping_shipment_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="shipment" column="shipment_id" not-null="true"/>
+    <many-to-one name="orderLine" column="order_line_id" not-null="true"/>
+    <property name="lineNumber" column="line_number" not-null="true"/>
+    <property name="quantity" not-null="true"/>
+    <property name="returnedQuantity" column="returned_quantity" not-null="true"/>
+    <property name="productCode" column="product_code" not-null="true" length="30"/>
+    <property name="productName" column="product_name" not-null="true" length="160"/>
+    <property name="unit" not-null="true" length="20"/>
+    <property name="unitPrice" column="unit_price" not-null="true" precision="18" scale="2"/>
+    <property name="taxRate" column="tax_rate" not-null="true" precision="6" scale="4"/>
+  </class>
+  <class name="SalesReturn" table="sales_return">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" not-null="true" unique="true" length="50"/>
+    <many-to-one name="shipment" column="shipment_id" not-null="true"/>
+    <property name="status" not-null="true" length="30"/>
+    <property name="reason" not-null="true" length="30"/>
+    <property name="requestedDate" column="requested_date" type="date" not-null="true"/>
+    <property name="receivedDate" column="received_date" type="date"/>
+    <property name="createdBy" column="created_by" not-null="true" length="50"/>
+    <property name="approvedBy" column="approved_by" length="50"/>
+    <property name="receivedBy" column="received_by" length="50"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="approvedAt" column="approved_at" type="timestamp"/>
+    <property name="receivedAt" column="received_at" type="timestamp"/>
+    <property name="notes" not-null="true" length="1000"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="line_number">
+      <key column="return_id"/>
+      <one-to-many class="SalesReturnLine"/>
+    </bag>
+  </class>
+  <class name="SalesReturnLine" table="sales_return_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="salesReturn" column="return_id" not-null="true"/>
+    <many-to-one name="shipmentLine" column="shipment_line_id" not-null="true"/>
+    <property name="lineNumber" column="line_number" not-null="true"/>
+    <property name="quantity" not-null="true"/>
+    <property name="restock" not-null="true"/>
+    <property name="unitPrice" column="unit_price" not-null="true" precision="18" scale="2"/>
+    <property name="taxRate" column="tax_rate" not-null="true" precision="6" scale="4"/>
+    <property name="productCode" column="product_code" not-null="true" length="30"/>
+    <property name="productName" column="product_name" not-null="true" length="160"/>
+  </class>
+</hibernate-mapping>

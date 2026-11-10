@@ -1,0 +1,8 @@
+<%@ page pageEncoding="UTF-8" %>
+<div class="table-wrap"><table><thead><tr><th>行</th><th>商品</th><th>数量</th></tr></thead><tbody>
+  <c:forEach items="${form.productId}" var="selected" varStatus="row"><tr>
+    <td><c:out value="${row.count}"/></td>
+    <td><select name="productId" aria-label="商品"><option value="">未使用行</option><c:forEach items="${products}" var="p"><option value="<c:out value='${p.id}'/>" <c:if test="${selected eq fn:escapeXml(p.id)}">selected</c:if>><c:out value="${p.code}"/> <c:out value="${p.name}"/></option></c:forEach></select></td>
+    <td><input type="text" name="quantity" inputmode="numeric" maxlength="9" aria-label="数量" value="<c:out value='${form.quantity[row.index]}'/>"></td>
+  </tr></c:forEach>
+</tbody></table></div>

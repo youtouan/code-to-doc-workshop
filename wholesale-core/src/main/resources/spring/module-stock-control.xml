@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <bean id="stockTransferService" class="jp.co.tsubame.wholesale.service.StockTransferService" parent="baseService">
+    <property name="ledger" ref="inventoryLedger"/>
+  </bean>
+  <bean id="stockAdjustmentService" class="jp.co.tsubame.wholesale.service.StockAdjustmentService" parent="baseService">
+    <property name="ledger" ref="inventoryLedger"/>
+  </bean>
+  <bean id="stockCountService" class="jp.co.tsubame.wholesale.service.StockCountService" parent="baseService">
+    <property name="ledger" ref="inventoryLedger"/>
+  </bean>
+  <bean id="stockControlReportDao" class="jp.co.tsubame.wholesale.dao.StockControlReportDao">
+    <property name="dao" ref="wholesaleDao"/>
+  </bean>
+  <bean id="stockControlReportService" class="jp.co.tsubame.wholesale.service.StockControlReportService" parent="baseService">
+    <property name="reports" ref="stockControlReportDao"/>
+  </bean>
+</beans>

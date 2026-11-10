@@ -1,0 +1,53 @@
+name: Copilot setup steps
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  # The job must be named copilot-setup-steps for Copilot cloud agent to use it.
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:16.10
+        env:
+          POSTGRES_DB: wholesale
+          POSTGRES_USER: wholesale
+          POSTGRES_PASSWORD: wholesale-local
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U wholesale -d wholesale"
+          --health-interval 3s --health-timeout 3s --health-retries 30
+    # Job-level env is ignored for this job, so each step sets what it needs.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Initialize the databases used by tests
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGUSER: wholesale
+          PGPASSWORD: wholesale-local
+        run: |
+          createdb wholesale_test
+          PGDATABASE=wholesale_test sh scripts/initialize-database.sh
+          PGDATABASE=wholesale sh scripts/initialize-database.sh
+      - name: Warm the Maven cache
+        run: mvn -B -ntp -DskipTests verify

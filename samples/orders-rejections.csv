@@ -1,0 +1,7 @@
+external_key,customer_code,warehouse_code,order_date,requested_date,external_reference,delivery_address,product_code,quantity,notes
+CSV-ORDER-GOOD,C001,EAST,2026-09-01,2026-09-08,CSV-PO-GOOD,,P001,2,正常な独立注文
+CSV-ORDER-PACK,C001,EAST,2026-09-01,2026-09-08,CSV-PO-PACK,,P004,1,入数10の商品を数量1で注文するため拒否
+CSV-ORDER-HEADER,C001,EAST,2026-09-01,2026-09-08,CSV-PO-HEADER,,P001,2,得意先が不一致のグループ全体を拒否
+CSV-ORDER-HEADER,C002,EAST,2026-09-01,2026-09-08,CSV-PO-HEADER,,P002,2,得意先が不一致のグループ全体を拒否
+CSV-ORDER-DUPLICATE,C001,EAST,2026-09-01,2026-09-08,CSV-PO-DUP,,P001,2,同一商品の重複を拒否
+CSV-ORDER-DUPLICATE,C001,EAST,2026-09-01,2026-09-08,CSV-PO-DUP,,P001,3,同一商品の重複を拒否

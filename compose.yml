@@ -1,0 +1,52 @@
+services:
+  database:
+    image: postgres:16.10
+    environment:
+      POSTGRES_DB: wholesale
+      POSTGRES_USER: wholesale
+      POSTGRES_PASSWORD: wholesale-local
+      TZ: Asia/Tokyo
+    volumes:
+      - wholesale-db:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # Check over TCP: on first start, the image initializes the database with a temporary server
+      # that listens only on the Unix socket, so a socket check would pass before that server stops.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U wholesale -d wholesale"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  web:
+    build:
+      context: .
+      target: web
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      JAVA_OPTS: >-
+        -Ddb.url=jdbc:postgresql://database:5432/wholesale
+        -Ddb.username=wholesale
+        -Ddb.password=wholesale-local
+    ports:
+      - "127.0.0.1:8080:8080"
+  batch:
+    profiles: ["batch"]
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    build:
+      context: .
+      target: batch
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      JAVA_TOOL_OPTIONS: >-
+        -Ddb.url=jdbc:postgresql://database:5432/wholesale
+        -Ddb.username=wholesale
+        -Ddb.password=wholesale-local
+      WHOLESALE_BATCH_PASSWORD: Demo-batch-2026!
+    volumes:
+      - ./samples:/data/samples:ro
+      - ./.runtime/exports:/data/exports
+volumes:
+  wholesale-db:

@@ -1,0 +1,13 @@
+# Only the Maven project and the Tomcat settings go into the image build. Documents, tests,
+# scripts and the catch-up patches stay out, so editing them keeps the Docker build cache valid
+# and scripts/observe-import.sh rebuilds the batch image only after the code changes.
+*
+!pom.xml
+!wholesale-core
+!wholesale-web
+!wholesale-batch
+!runtime
+**/target
+**/*.log
+**/.idea
+**/.vscode

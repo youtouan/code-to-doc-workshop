@@ -1,0 +1,5 @@
+code,name,unit,tax_category,list_price,standard_cost,pack_size,reorder_point,reorder_quantity,active,notes
+CSV-PAPER,"架空サンプル紙, A4",冊,STANDARD,500.00,320.00,1,10,20,true,"カンマと ""引用符"" の例"
+CSV-TEA,架空サンプル茶,本,REDUCED,150.00,90.00,1,12,24,true,"複数行の備考
+第2行も同じ商品"
+CSV-OLD,架空旧商品,個,EXEMPT,0.00,0.00,1,0,0,false,停止商品の例

@@ -1,0 +1,158 @@
+name: Legacy application
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  postgres-and-war:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16.10
+        env:
+          POSTGRES_DB: wholesale
+          POSTGRES_USER: wholesale
+          POSTGRES_PASSWORD: wholesale-local
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U wholesale -d wholesale"
+          --health-interval 3s --health-timeout 3s --health-retries 30
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: 5432
+      PGUSER: wholesale
+      PGPASSWORD: wholesale-local
+      WHOLESALE_BATCH_PASSWORD: Demo-batch-2026!
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Initialize dedicated PostgreSQL databases
+        run: |
+          createdb wholesale_test
+          PGDATABASE=wholesale_test sh scripts/initialize-database.sh
+          PGDATABASE=wholesale sh scripts/initialize-database.sh
+      - name: Java 7 API guard and real PostgreSQL tests
+        run: |
+          mvn -B -ntp verify -Ddb.tests=true \
+            -Ddb.url=jdbc:postgresql://127.0.0.1:5432/wholesale_test \
+            -Ddb.username=wholesale -Ddb.password=wholesale-local
+      - name: Fetch pinned Tomcat and verify archive
+        run: |
+          base=https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.121/bin
+          archive=apache-tomcat-9.0.121.tar.gz
+          curl -fsSL --retry 3 "$base/$archive" -o "$RUNNER_TEMP/$archive"
+          curl -fsSL --retry 3 "$base/$archive.sha512" -o "$RUNNER_TEMP/$archive.sha512"
+          expected=$(awk '{print $1}' "$RUNNER_TEMP/$archive.sha512")
+          echo "$expected  $RUNNER_TEMP/$archive" | sha512sum -c -
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP"
+      - name: Compile every JSP with the pinned Tomcat
+        run: |
+          tomcat="$RUNNER_TEMP/apache-tomcat-9.0.121"
+          war="$GITHUB_WORKSPACE/wholesale-web/target/wholesale"
+          test -n "$(find "$war" -name '*.jsp' -print -quit)"
+          mkdir -p .runtime/jsp-compiler
+          cp="$tomcat/lib/*:$tomcat/bin/tomcat-juli.jar:$war/WEB-INF/classes:$war/WEB-INF/lib/*"
+          javac -encoding UTF-8 -source 7 -target 7 -cp "$cp" \
+            -d .runtime/jsp-compiler wholesale-web/src/test/jsp/CompileJsp.java
+          java -Dfile.encoding=UTF-8 -cp ".runtime/jsp-compiler:$cp" CompileJsp \
+            "$war" "$GITHUB_WORKSPACE/.runtime/jsp-generated"
+      - name: Run WAR on Tomcat 9 and JDK 8
+        run: |
+          mkdir -p .runtime
+          CATALINA_HOME="$RUNNER_TEMP/apache-tomcat-9.0.121" PORT=18080 \
+            sh scripts/start-local.sh > .runtime/tomcat-console.log 2>&1 &
+          echo "$!" > .runtime/tomcat-process.pid
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent http://127.0.0.1:18080/wholesale/login.do > /dev/null; then
+              break
+            fi
+            if ! kill -0 "$(cat .runtime/tomcat-process.pid)" 2>/dev/null; then
+              cat .runtime/tomcat-console.log
+              exit 1
+            fi
+            sleep 2
+          done
+          curl --fail --silent http://127.0.0.1:18080/wholesale/login.do > /dev/null
+      - name: HTTP workflows, permissions and JSP compilation
+        run: node scripts/http-smoke.mjs http://127.0.0.1:18080/wholesale
+      - name: Persistent batch imports and reruns
+        run: SMOKE_BASE_URL=http://127.0.0.1:18080/wholesale sh scripts/batch-smoke.sh
+      - name: Container configuration
+        run: docker compose config --quiet
+      - name: Preserve reports and runtime logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-runtime-evidence
+          path: |
+            **/target/surefire-reports/*
+            .runtime/tomcat-console.log
+            .runtime/tomcat/logs/*
+            .runtime/smoke/*
+          retention-days: 7
+  container-smoke:
+    needs: postgres-and-war
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      COMPOSE_PROJECT_NAME: wholesale-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and start the documented container path
+        run: |
+          mkdir -p .runtime/exports
+          docker compose up --build --detach web
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent http://127.0.0.1:8080/wholesale/login.do > /dev/null; then
+              break
+            fi
+            sleep 2
+          done
+          curl --fail --silent http://127.0.0.1:8080/wholesale/login.do > /dev/null
+      - name: Exercise the containerized WAR
+        run: node scripts/http-smoke.mjs http://127.0.0.1:8080/wholesale
+      - name: Exercise independently invoked container batch
+        run: |
+          export LOCAL_UID=$(id -u)
+          export LOCAL_GID=$(id -g)
+          docker compose --profile batch build batch
+          docker compose --profile batch run --rm batch health \
+            --user batch --password-env WHOLESALE_BATCH_PASSWORD
+          docker compose --profile batch run --rm batch import-products \
+            --file /data/samples/products-valid.csv --run-key container-products \
+            --user batch --password-env WHOLESALE_BATCH_PASSWORD
+          docker compose --profile batch run --rm batch export-stock \
+            --output /data/exports/container-stock.csv --limit 100000 \
+            --user batch --password-env WHOLESALE_BATCH_PASSWORD
+          test -s .runtime/exports/container-stock.csv
+      - name: Capture container logs
+        if: always()
+        run: |
+          mkdir -p .runtime
+          docker compose logs --no-color > .runtime/container.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: container-runtime-evidence
+          path: |
+            .runtime/container.log
+            .runtime/smoke/*
+            .runtime/exports/*
+          retention-days: 7
+      - name: Stop task-scoped containers
+        if: always()
+        run: docker compose down --volumes

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN" "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+<struts-config>
+  <form-beans>
+    <form-bean name="baseForm" type="jp.co.tsubame.wholesale.web.form.BaseForm"/>
+    <form-bean name="loginForm" type="jp.co.tsubame.wholesale.web.form.LoginForm"/>
+    <form-bean name="passwordForm" type="jp.co.tsubame.wholesale.web.form.PasswordForm"/>
+    <form-bean name="catalogForm" type="jp.co.tsubame.wholesale.web.form.CatalogForm"/>
+    <form-bean name="priceForm" type="jp.co.tsubame.wholesale.web.form.PriceForm"/>
+    <form-bean name="orderForm" type="jp.co.tsubame.wholesale.web.form.OrderForm"/>
+    <form-bean name="receiptForm" type="jp.co.tsubame.wholesale.web.form.ReceiptForm"/>
+    <form-bean name="shipmentForm" type="jp.co.tsubame.wholesale.web.form.ShipmentForm"/>
+    <form-bean name="returnForm" type="jp.co.tsubame.wholesale.web.form.ReturnForm"/>
+    <form-bean name="invoiceForm" type="jp.co.tsubame.wholesale.web.form.InvoiceForm"/>
+    <form-bean name="paymentForm" type="jp.co.tsubame.wholesale.web.form.PaymentForm"/>
+    <form-bean name="statementForm" type="jp.co.tsubame.wholesale.web.form.StatementForm"/>
+    <form-bean name="transferForm" type="jp.co.tsubame.wholesale.web.form.TransferForm"/>
+    <form-bean name="adjustmentForm" type="jp.co.tsubame.wholesale.web.form.AdjustmentForm"/>
+    <form-bean name="countForm" type="jp.co.tsubame.wholesale.web.form.CountForm"/>
+    <form-bean name="supplierForm" type="jp.co.tsubame.wholesale.web.form.SupplierForm"/>
+    <form-bean name="supplierProductForm" type="jp.co.tsubame.wholesale.web.form.SupplierProductForm"/>
+    <form-bean name="purchaseForm" type="jp.co.tsubame.wholesale.web.form.PurchaseForm"/>
+    <form-bean name="purchaseReceiptForm" type="jp.co.tsubame.wholesale.web.form.PurchaseReceiptForm"/>
+    <form-bean name="auditForm" type="jp.co.tsubame.wholesale.web.form.AuditForm"/>
+    <form-bean name="userForm" type="jp.co.tsubame.wholesale.web.form.UserForm"/>
+    <form-bean name="apForm" type="jp.co.tsubame.wholesale.web.form.APForm"/>
+    <form-bean name="apInvoiceForm" type="jp.co.tsubame.wholesale.web.form.APInvoiceForm"/>
+    <form-bean name="apMatchForm" type="jp.co.tsubame.wholesale.web.form.APMatchForm"/>
+    <form-bean name="apCreditForm" type="jp.co.tsubame.wholesale.web.form.APCreditForm"/>
+    <form-bean name="apPaymentForm" type="jp.co.tsubame.wholesale.web.form.APPaymentForm"/>
+    <form-bean name="operationsReportForm" type="jp.co.tsubame.wholesale.web.form.OperationsReportForm"/>
+    <form-bean name="dispatchForm" type="jp.co.tsubame.wholesale.web.form.DispatchForm"/>
+    <form-bean name="deliveryForm" type="jp.co.tsubame.wholesale.web.form.DeliveryForm"/>
+    <form-bean name="quotationForm" type="jp.co.tsubame.wholesale.web.form.QuotationForm"/>
+    <form-bean name="orderAmendmentForm" type="jp.co.tsubame.wholesale.web.form.OrderAmendmentForm"/>
+  </form-beans>
+  <action-mappings>
+    <action path="/login" type="jp.co.tsubame.wholesale.web.action.LoginAction" name="loginForm" scope="request" validate="false"/>
+    <action path="/logout" type="jp.co.tsubame.wholesale.web.action.LogoutAction" name="baseForm" scope="request" validate="false"/>
+    <action path="/password" type="jp.co.tsubame.wholesale.web.action.PasswordAction" name="passwordForm" scope="request" validate="false"/>
+    <action path="/dashboard" type="jp.co.tsubame.wholesale.web.action.DashboardAction" name="baseForm" scope="request" validate="false"/>
+    <action path="/customers" type="jp.co.tsubame.wholesale.web.action.CatalogAction" name="catalogForm" scope="request" validate="false"/>
+    <action path="/products" type="jp.co.tsubame.wholesale.web.action.CatalogAction" name="catalogForm" scope="request" validate="false"/>
+    <action path="/warehouses" type="jp.co.tsubame.wholesale.web.action.CatalogAction" name="catalogForm" scope="request" validate="false"/>
+    <action path="/prices" type="jp.co.tsubame.wholesale.web.action.PriceAction" name="priceForm" scope="request" validate="false"/>
+    <action path="/orders" type="jp.co.tsubame.wholesale.web.action.OrderAction" name="orderForm" scope="request" validate="false"/>
+    <action path="/stock" type="jp.co.tsubame.wholesale.web.action.StockAction" name="baseForm" scope="request" validate="false"/>
+    <action path="/receipts" type="jp.co.tsubame.wholesale.web.action.ReceiptAction" name="receiptForm" scope="request" validate="false"/>
+    <action path="/shipments" type="jp.co.tsubame.wholesale.web.action.ShipmentAction" name="shipmentForm" scope="request" validate="false"/>
+    <action path="/returns" type="jp.co.tsubame.wholesale.web.action.ReturnAction" name="returnForm" scope="request" validate="false"/>
+    <action path="/invoices" type="jp.co.tsubame.wholesale.web.action.InvoiceAction" name="invoiceForm" scope="request" validate="false"/>
+    <action path="/payments" type="jp.co.tsubame.wholesale.web.action.PaymentAction" name="paymentForm" scope="request" validate="false"/>
+    <action path="/statements" type="jp.co.tsubame.wholesale.web.action.StatementAction" name="statementForm" scope="request" validate="false"/>
+    <action path="/transfers" type="jp.co.tsubame.wholesale.web.action.TransferAction" name="transferForm" scope="request" validate="false"/>
+    <action path="/adjustments" type="jp.co.tsubame.wholesale.web.action.AdjustmentAction" name="adjustmentForm" scope="request" validate="false"/>
+    <action path="/counts" type="jp.co.tsubame.wholesale.web.action.CountAction" name="countForm" scope="request" validate="false"/>
+    <action path="/suppliers" type="jp.co.tsubame.wholesale.web.action.SupplierAction" name="supplierForm" scope="request" validate="false"/>
+    <action path="/supplierProducts" type="jp.co.tsubame.wholesale.web.action.SupplierProductAction" name="supplierProductForm" scope="request" validate="false"/>
+    <action path="/purchases" type="jp.co.tsubame.wholesale.web.action.PurchaseAction" name="purchaseForm" scope="request" validate="false"/>
+    <action path="/purchaseReceipts" type="jp.co.tsubame.wholesale.web.action.PurchaseReceiptAction" name="purchaseReceiptForm" scope="request" validate="false"/>
+    <action path="/replenishment" type="jp.co.tsubame.wholesale.web.action.ReplenishmentAction" name="baseForm" scope="request" validate="false"/>
+    <action path="/audit" type="jp.co.tsubame.wholesale.web.action.AuditAction" name="auditForm" scope="request" validate="false"/>
+    <action path="/users" type="jp.co.tsubame.wholesale.web.action.UserAction" name="userForm" scope="request" validate="false"/>
+    <action path="/stockReports" type="jp.co.tsubame.wholesale.web.action.StockReportAction" name="baseForm" scope="request" validate="false"/>
+    <action path="/apInvoices" type="jp.co.tsubame.wholesale.web.action.APInvoiceAction" name="apInvoiceForm" scope="request" validate="false"/>
+    <action path="/apMatches" type="jp.co.tsubame.wholesale.web.action.APMatchAction" name="apMatchForm" scope="request" validate="false"/>
+    <action path="/apCredits" type="jp.co.tsubame.wholesale.web.action.APCreditAction" name="apCreditForm" scope="request" validate="false"/>
+    <action path="/apPayments" type="jp.co.tsubame.wholesale.web.action.APPaymentAction" name="apPaymentForm" scope="request" validate="false"/>
+    <action path="/apReports" type="jp.co.tsubame.wholesale.web.action.APReportAction" name="apForm" scope="request" validate="false"/>
+    <action path="/operationsReports" type="jp.co.tsubame.wholesale.web.action.OperationsReportAction" name="operationsReportForm" scope="request" validate="false"/>
+    <action path="/dispatchManifests" type="jp.co.tsubame.wholesale.web.action.DispatchAction" name="dispatchForm" scope="request" validate="false"/>
+    <action path="/deliveryAttempts" type="jp.co.tsubame.wholesale.web.action.DeliveryAction" name="deliveryForm" scope="request" validate="false"/>
+    <action path="/quotations" type="jp.co.tsubame.wholesale.web.action.QuotationAction" name="quotationForm" scope="request" validate="false"/>
+    <action path="/orderAmendments" type="jp.co.tsubame.wholesale.web.action.OrderAmendmentAction" name="orderAmendmentForm" scope="request" validate="false"/>
+  </action-mappings>
+  <message-resources parameter="jp.co.tsubame.wholesale.web.Messages"/>
+  <plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property property="pathnames" value="/WEB-INF/validator-rules.xml,/WEB-INF/validation.xml"/>
+  </plug-in>
+</struts-config>

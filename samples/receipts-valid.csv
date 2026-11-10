@@ -1,0 +1,3 @@
+request_key,warehouse_code,product_code,quantity,unit_cost,receipt_date,reference,note
+csv-receipt-001,EAST,P001,12,320.00,2026-09-01,CSV-PO-001,既存商品の入庫
+csv-receipt-002,WEST,P003,24,90.00,2026-09-01,CSV-PO-002,"別倉庫,軽減税率商品"

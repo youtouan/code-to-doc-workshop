@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="jp.co.tsubame.wholesale.entity" default-lazy="false">
+  <class name="Supplier" table="supplier">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="code" length="30" not-null="true" unique="true"/>
+    <property name="name" length="120" not-null="true"/>
+    <property name="active" not-null="true"/>
+    <property name="onHold" column="on_hold" not-null="true"/>
+    <property name="closingDay" column="closing_day" not-null="true"/>
+    <property name="paymentTermDays" column="payment_term_days" not-null="true"/>
+    <property name="defaultLeadTimeDays" column="default_lead_time_days" not-null="true"/>
+    <property name="minimumOrderAmount" column="minimum_order_amount" precision="18" scale="2" not-null="true"/>
+    <property name="taxRounding" column="tax_rounding" length="10" not-null="true"/>
+    <property name="postalCode" column="postal_code" length="12" not-null="true"/>
+    <property name="address" length="250" not-null="true"/>
+    <property name="telephone" length="30" not-null="true"/>
+    <property name="orderingInstructions" column="ordering_instructions" length="1000" not-null="true"/>
+    <property name="notes" length="1000" not-null="true"/>
+  </class>
+  <class name="SupplierProduct" table="supplier_product">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="supplier" column="supplier_id" not-null="true"/>
+    <many-to-one name="product" column="product_id" not-null="true"/>
+    <property name="supplierProductCode" column="supplier_product_code" length="60" not-null="true"/>
+    <property name="validFrom" column="valid_from" type="date" not-null="true"/>
+    <property name="validTo" column="valid_to" type="date"/>
+    <property name="minimumQuantity" column="minimum_quantity" not-null="true"/>
+    <property name="orderPackSize" column="order_pack_size" not-null="true"/>
+    <property name="leadTimeDays" column="lead_time_days" not-null="true"/>
+    <property name="unitCost" column="unit_cost" precision="18" scale="2" not-null="true"/>
+    <property name="preferred" not-null="true"/>
+    <property name="active" not-null="true"/>
+    <property name="notes" length="1000" not-null="true"/>
+  </class>
+  <class name="PurchaseOrder" table="purchase_order">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" length="50" not-null="true" unique="true"/>
+    <many-to-one name="supplier" column="supplier_id" not-null="true"/>
+    <many-to-one name="warehouse" column="warehouse_id" not-null="true"/>
+    <property name="orderDate" column="order_date" type="date" not-null="true"/>
+    <property name="expectedDate" column="expected_date" type="date" not-null="true"/>
+    <property name="status" length="20" not-null="true"/>
+    <property name="supplierName" column="supplier_name" length="120" not-null="true"/>
+    <property name="closingDay" column="closing_day" not-null="true"/>
+    <property name="paymentTermDays" column="payment_term_days" not-null="true"/>
+    <property name="taxRounding" column="tax_rounding" length="10" not-null="true"/>
+    <property name="orderingInstructions" column="ordering_instructions" length="1000" not-null="true"/>
+    <property name="totalAmount" column="total_amount" precision="18" scale="2" not-null="true"/>
+    <property name="createdBy" column="created_by" length="50" not-null="true"/>
+    <property name="createdAt" column="created_at" type="timestamp" not-null="true"/>
+    <property name="submittedBy" column="submitted_by" length="50"/>
+    <property name="submittedAt" column="submitted_at" type="timestamp"/>
+    <property name="approvedBy" column="approved_by" length="50"/>
+    <property name="approvedAt" column="approved_at" type="timestamp"/>
+    <property name="lastChangedBy" column="last_changed_by" length="50" not-null="true"/>
+    <property name="lastChangedAt" column="last_changed_at" type="timestamp" not-null="true"/>
+    <property name="decisionReason" column="decision_reason" length="500" not-null="true"/>
+    <property name="notes" length="1000" not-null="true"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="line_number">
+      <key column="order_id" not-null="true"/>
+      <one-to-many class="PurchaseOrderLine"/>
+    </bag>
+  </class>
+  <class name="PurchaseOrderLine" table="purchase_order_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="order" column="order_id" not-null="true"/>
+    <property name="lineNumber" column="line_number" not-null="true"/>
+    <many-to-one name="product" column="product_id" not-null="true"/>
+    <property name="productCode" column="product_code" length="30" not-null="true"/>
+    <property name="productName" column="product_name" length="120" not-null="true"/>
+    <property name="unit" length="20" not-null="true"/>
+    <property name="supplierProductCode" column="supplier_product_code" length="60" not-null="true"/>
+    <property name="quantity" not-null="true"/>
+    <property name="receivedQuantity" column="received_quantity" not-null="true"/>
+    <property name="rejectedQuantity" column="rejected_quantity" not-null="true"/>
+    <property name="cancelledQuantity" column="cancelled_quantity" not-null="true"/>
+    <property name="orderPackSize" column="order_pack_size" not-null="true"/>
+    <property name="leadTimeDays" column="lead_time_days" not-null="true"/>
+    <property name="unitCost" column="unit_cost" precision="18" scale="2" not-null="true"/>
+    <property name="lineAmount" column="line_amount" precision="18" scale="2" not-null="true"/>
+    <property name="expectedDate" column="expected_date" type="date" not-null="true"/>
+    <property name="notes" length="250" not-null="true"/>
+  </class>
+  <class name="PurchaseReceipt" table="purchase_receipt">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <property name="number" length="50" not-null="true" unique="true"/>
+    <property name="requestKey" column="request_key" length="100" not-null="true" unique="true"/>
+    <property name="payloadHash" column="payload_hash" length="64" not-null="true"/>
+    <many-to-one name="order" column="order_id" not-null="true"/>
+    <property name="receiptDate" column="receipt_date" type="date" not-null="true"/>
+    <property name="supplierDeliveryNumber" column="supplier_delivery_number" length="60" not-null="true"/>
+    <property name="receivedBy" column="received_by" length="50" not-null="true"/>
+    <property name="receivedAt" column="received_at" type="timestamp" not-null="true"/>
+    <property name="acceptedAmount" column="accepted_amount" precision="18" scale="2" not-null="true"/>
+    <property name="notes" length="1000" not-null="true"/>
+    <bag name="lines" inverse="true" cascade="all-delete-orphan" lazy="true" order-by="line_number">
+      <key column="receipt_id" not-null="true"/>
+      <one-to-many class="PurchaseReceiptLine"/>
+    </bag>
+  </class>
+  <class name="PurchaseReceiptLine" table="purchase_receipt_line">
+    <id name="id"><generator class="sequence"><param name="sequence">wholesale_seq</param></generator></id>
+    <version name="version"/>
+    <many-to-one name="receipt" column="receipt_id" not-null="true"/>
+    <property name="lineNumber" column="line_number" not-null="true"/>
+    <many-to-one name="orderLine" column="order_line_id" not-null="true"/>
+    <property name="acceptedQuantity" column="accepted_quantity" not-null="true"/>
+    <property name="rejectedQuantity" column="rejected_quantity" not-null="true"/>
+    <property name="rejectionReason" column="rejection_reason" length="250" not-null="true"/>
+    <property name="unitCost" column="unit_cost" precision="18" scale="2" not-null="true"/>
+    <property name="acceptedAmount" column="accepted_amount" precision="18" scale="2" not-null="true"/>
+    <many-to-one name="stockReceipt" column="stock_receipt_id" unique="true"/>
+    <property name="notes" length="250" not-null="true"/>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <bean id="batchRunService" class="jp.co.tsubame.wholesale.batch.service.BatchRunService" parent="baseService"/>
+  <bean id="orderImportService" class="jp.co.tsubame.wholesale.batch.service.OrderImportService" parent="baseService">
+    <property name="orderService" ref="orderService"/>
+  </bean>
+  <bean id="batchRowService" class="jp.co.tsubame.wholesale.batch.service.BatchRowService" parent="baseService">
+    <property name="batchRunService" ref="batchRunService"/>
+    <property name="authService" ref="authService"/>
+    <property name="catalogService" ref="catalogService"/>
+    <property name="inventoryService" ref="inventoryService"/>
+    <property name="orderService" ref="orderService"/>
+    <property name="billingService" ref="billingService"/>
+    <property name="orderImportService" ref="orderImportService"/>
+  </bean>
+  <bean id="batchQueryService" class="jp.co.tsubame.wholesale.batch.service.BatchQueryService" parent="baseService">
+    <property name="billingService" ref="billingService"/>
+  </bean>
+  <!-- Deliberately does not end in Service: no transaction surrounds the entire file/job. -->
+  <bean id="batchOrchestrator" class="jp.co.tsubame.wholesale.batch.BatchOrchestrator">
+    <property name="batchRunService" ref="batchRunService"/>
+    <property name="batchRowService" ref="batchRowService"/>
+    <property name="batchQueryService" ref="batchQueryService"/>
+  </bean>
+</beans>

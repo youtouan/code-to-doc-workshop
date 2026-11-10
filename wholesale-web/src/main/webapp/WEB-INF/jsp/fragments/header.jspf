@@ -1,0 +1,91 @@
+<%@ page pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><c:out value="${pageTitle}"/> | つばめ卸</title>
+  <script src="<c:out value='${ctx}'/>/assets/theme.js"></script>
+  <link rel="stylesheet" href="<c:out value='${ctx}'/>/assets/app.css">
+</head>
+<body>
+<a class="skip" href="#main">本文へ移動</a>
+<header class="topbar">
+  <a class="brand" href="<c:out value='${ctx}'/>/dashboard.do">つばめ卸 <span class="muted">/ 業務管理</span></a>
+  <c:if test="${not empty actor}">
+    <div class="account">
+      <span><c:out value="${actor.displayName}"/>（<c:out value="${actor.login}"/>）</span>
+      <a href="<c:out value='${ctx}'/>/password.do">パスワード変更</a>
+      <form action="<c:out value='${ctx}'/>/logout.do" method="post">
+        <input type="hidden" name="op" value="logout">
+        <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
+        <button type="submit">ログアウト</button>
+      </form>
+    </div>
+  </c:if>
+</header>
+<div class="shell">
+<aside class="sidebar" aria-label="業務ナビゲーション">
+  <c:if test="${not empty actor}">
+    <div class="nav-group"><h2>WORKSPACE</h2><a href="<c:out value='${ctx}'/>/dashboard.do">業務ダッシュボード</a></div>
+    <div class="nav-group"><h2>販売・出荷</h2>
+      <a href="<c:out value='${ctx}'/>/quotations.do">見積・交渉提案</a>
+      <a href="<c:out value='${ctx}'/>/orders.do">受注・承認</a>
+      <a href="<c:out value='${ctx}'/>/orderAmendments.do">承認済み受注の変更申請</a>
+      <a href="<c:out value='${ctx}'/>/shipments.do">出荷指示・実績</a>
+      <a href="<c:out value='${ctx}'/>/dispatchManifests.do">配送表・一括出荷</a>
+      <a href="<c:out value='${ctx}'/>/deliveryAttempts.do">配送手動報告・再対応</a>
+      <a href="<c:out value='${ctx}'/>/returns.do">返品・検品</a>
+    </div>
+    <div class="nav-group"><h2>在庫・調達</h2>
+      <a href="<c:out value='${ctx}'/>/stock.do">在庫・移動履歴</a>
+      <c:if test="${canWAREHOUSE or canMANAGER or canBILLING or canBATCH}"><a href="<c:out value='${ctx}'/>/receipts.do">直接入庫</a></c:if>
+      <a href="<c:out value='${ctx}'/>/purchases.do">仕入発注・入荷</a>
+      <a href="<c:out value='${ctx}'/>/replenishment.do">補充候補</a>
+      <a href="<c:out value='${ctx}'/>/transfers.do">倉庫間移送</a>
+      <a href="<c:out value='${ctx}'/>/adjustments.do">在庫調整</a>
+      <a href="<c:out value='${ctx}'/>/counts.do">棚卸</a>
+      <a href="<c:out value='${ctx}'/>/stockReports.do">台帳整合性・在庫評価</a>
+    </div>
+    <c:if test="${canBILLING or canMANAGER or canBATCH}">
+      <div class="nav-group"><h2>請求・債権</h2>
+        <a href="<c:out value='${ctx}'/>/invoices.do">請求・返品クレジット</a>
+        <c:if test="${canBILLING or canMANAGER}"><a href="<c:out value='${ctx}'/>/payments.do">入金・消込</a>
+        <a href="<c:out value='${ctx}'/>/statements.do">得意先元帳・滞留債権</a></c:if>
+      </div>
+    </c:if>
+    <div class="nav-group"><h2>マスター</h2>
+      <a href="<c:out value='${ctx}'/>/customers.do">得意先</a>
+      <a href="<c:out value='${ctx}'/>/products.do">商品</a>
+      <a href="<c:out value='${ctx}'/>/warehouses.do">倉庫</a>
+      <a href="<c:out value='${ctx}'/>/prices.do">得意先別価格条件</a>
+      <a href="<c:out value='${ctx}'/>/suppliers.do">仕入先・調達条件</a>
+    </div>
+    <c:if test="${canMANAGER}"><div class="nav-group"><h2>監査・システム管理</h2>
+      <a href="<c:out value='${ctx}'/>/audit.do">監査イベント照会</a>
+      <c:if test="${canADMIN}"><a href="<c:out value='${ctx}'/>/users.do">利用者・権限管理</a></c:if>
+    </div></c:if>
+    <c:if test="${canBILLING or canMANAGER}"><div class="nav-group"><h2>仕入債務・支払</h2>
+      <a href="<c:out value='${ctx}'/>/apInvoices.do">仕入先請求・買掛計上</a>
+      <a href="<c:out value='${ctx}'/>/apCredits.do">財務値引・買掛減額</a>
+      <a href="<c:out value='${ctx}'/>/apPayments.do">仕入先への支払</a>
+      <a href="<c:out value='${ctx}'/>/apReports.do">未払残高・仕入先元帳</a>
+    </div></c:if>
+    <div class="nav-group"><h2>業務レポート</h2>
+      <c:if test="${canSALES or canMANAGER or canBILLING}"><a href="<c:out value='${ctx}'/>/operationsReports.do?op=sales">出荷・返品の売上集計</a></c:if>
+      <c:if test="${canSALES or canWAREHOUSE or canMANAGER or canBATCH}"><a href="<c:out value='${ctx}'/>/operationsReports.do?op=backlog">現在の受注残・納期例外</a></c:if>
+      <c:if test="${canWAREHOUSE or canMANAGER or canBILLING}"><a href="<c:out value='${ctx}'/>/operationsReports.do?op=supplierQuality">仕入品質・入荷遅延</a></c:if>
+      <c:if test="${canWAREHOUSE or canMANAGER or canBILLING or canBATCH}"><a href="<c:out value='${ctx}'/>/operationsReports.do?op=stockActivity">台帳記録日の在庫活動</a></c:if>
+    </div>
+  </c:if>
+  <c:if test="${empty actor}"><div class="nav-group"><h2>WHOLESALE OPERATIONS</h2><p class="help">販売から在庫、請求まで。<br>日々の業務を、ひとつの流れに。</p></div></c:if>
+</aside>
+<main id="main">
+<div class="page-heading"><div><div class="eyebrow">Tsubame wholesale</div><h1><c:out value="${pageTitle}"/></h1></div></div>
+<c:if test="${not empty flash}"><div class="notice success" role="status"><c:out value="${flash}"/></div></c:if>
+<c:if test="${not empty fieldErrors}">
+  <div class="notice" role="alert"><strong>入力・操作をご確認ください</strong><ul>
+    <c:forEach items="${fieldErrors}" var="error"><li><c:if test="${not empty error.field}"><strong><c:out value="${error.field}"/>：</strong></c:if><c:out value="${error.message}"/></li></c:forEach>
+  </ul></div>
+</c:if>
+<html:errors/>
